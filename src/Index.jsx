@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View } from 'react-native'
-import styles from './styles'
+import { StyleSheet } from 'react-native';
 export default class Index extends Component {
   render() {
     return (
@@ -21,4 +21,22 @@ export default class Index extends Component {
     )
   }
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+    backgroundColor:'#aabbcc'
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+  }
+})
 

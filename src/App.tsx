@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
-import { Text, View } from 'react-native'
-import Index from './Index'
+import Private_information from './Private_information'
 
 export default class App extends Component {
   render() {
     return (
-      <Index />
+      <Private_information />
     )
   }
 }
