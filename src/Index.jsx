@@ -13,6 +13,7 @@ export default class Index extends Component {
         <Text style={styles.welcome}> 多设备同步 </Text>
         <Text style={styles.welcome}> 奖励机制 </Text>
         <Text style={styles.welcome}> 隐私保护与数据安全 </Text>
+        <Text style={styles.welcome}> 同样适用于单身群体和小家庭 </Text>
         <Text style={styles.instructions}> 用户角色： </Text>
         <Text style={styles.welcome}> 管理员（家长） </Text>
         <Text style={styles.welcome}> 成员（孩子、配偶） </Text>
