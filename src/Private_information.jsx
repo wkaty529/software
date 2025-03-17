@@ -62,15 +62,15 @@ const Private_information = () => {
       <View style={styles.genderButtonRow}>
         <Button
           mode={selectedGender === 'male' ? 'contained' : 'outlined'}
+          // 修改：移除 disabled 属性
           onPress={() => setSelectedGender('male')}
-          disabled={selectedGender === 'female'}
         >
           男
         </Button>
         <Button
           mode={selectedGender === 'female' ? 'contained' : 'outlined'}
+          // 修改：移除 disabled 属性
           onPress={() => setSelectedGender('female')}
-          disabled={selectedGender === 'male'}
         >
           女
         </Button>
