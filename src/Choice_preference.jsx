@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { Checkbox, Radio, Card, Divider, Space, Tag, Typography, Select, Row, Col } from 'antd';
-
-const { Title, Text } = Typography;
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
+import { RadioButton } from 'react-native-paper';
+import { SelectList } from 'react-native-dropdown-select-list';
 
 const Choice_preference = () => {
   // 技能分类数据
@@ -64,9 +71,9 @@ const Choice_preference = () => {
 
   // 时间偏好选项
   const timePreferences = [
-    { value: 'morning', label: '早晨 (6:00-12:00)' },
-    { value: 'afternoon', label: '下午 (12:00-18:00)' },
-    { value: 'evening', label: '晚上 (18:00-22:00)' }
+    { key: 'morning', value: '早晨 (6:00-12:00)' },
+    { key: 'afternoon', value: '下午 (12:00-18:00)' },
+    { key: 'evening', value: '晚上 (18:00-22:00)' }
   ];
 
   // 状态管理
@@ -74,79 +81,209 @@ const Choice_preference = () => {
   const [taskPrefs, setTaskPrefs] = useState({});
   const [preferredTime, setPreferredTime] = useState([]);
 
+  // 渲染技能标签
+  const renderSkillTag = (skill) => (
+    <TouchableOpacity
+      key={skill.id}
+      style={[
+        styles.skillTag,
+        selectedSkills.includes(skill.id) && styles.skillTagSelected
+      ]}
+      onPress={() => {
+        const newSelected = selectedSkills.includes(skill.id)
+          ? selectedSkills.filter(id => id !== skill.id)
+          : [...selectedSkills, skill.id];
+        setSelectedSkills(newSelected);
+      }}
+    >
+      <Text style={[
+        styles.skillTagText,
+        selectedSkills.includes(skill.id) && styles.skillTagTextSelected
+      ]}>
+        {skill.label}
+      </Text>
+    </TouchableOpacity>
+  );
+
   return (
-    <div style={{ padding: '20px' }}>
-      <Title level={2}>家庭成员技能与偏好设置</Title>
-      
-      {/* 技能选择部分 */}
-      <Card title="技能标签选择" style={{ marginBottom: '20px' }}>
-        {Object.entries(skillCategories).map(([key, category]) => (
-          <div key={key} style={{ marginBottom: '20px' }}>
-            <Title level={4}>{category.name}</Title>
-            <Space wrap>
-              {category.skills.map(skill => (
-                <Tag.CheckableTag
-                  key={skill.id}
-                  checked={selectedSkills.includes(skill.id)}
-                  onChange={checked => {
-                    const newSelected = checked
-                      ? [...selectedSkills, skill.id]
-                      : selectedSkills.filter(id => id !== skill.id);
-                    setSelectedSkills(newSelected);
-                  }}
-                  style={{ padding: '5px 10px', marginBottom: '8px' }}
-                >
-                  {skill.label}
-                </Tag.CheckableTag>
-              ))}
-            </Space>
-          </div>
-        ))}
-      </Card>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <Text style={styles.title}>家庭成员技能与偏好设置</Text>
+        
+        {/* 技能选择部分 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>技能标签选择</Text>
+          {Object.entries(skillCategories).map(([key, category]) => (
+            <View key={key} style={styles.categoryContainer}>
+              <Text style={styles.categoryTitle}>{category.name}</Text>
+              <View style={styles.skillsContainer}>
+                {category.skills.map(skill => renderSkillTag(skill))}
+              </View>
+            </View>
+          ))}
+        </View>
 
-      {/* 任务偏好部分 */}
-      <Card title="任务偏好设置" style={{ marginBottom: '20px' }}>
-        {Object.entries(taskPreferences).map(([key, category]) => (
-          <div key={key} style={{ marginBottom: '20px' }}>
-            <Title level={4}>{category.name}</Title>
-            <Row gutter={[16, 16]}>
+        {/* 任务偏好部分 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>任务偏好设置</Text>
+          {Object.entries(taskPreferences).map(([key, category]) => (
+            <View key={key} style={styles.categoryContainer}>
+              <Text style={styles.categoryTitle}>{category.name}</Text>
               {category.tasks.map(task => (
-                <Col span={8} key={task.id}>
-                  <Card size="small">
-                    <Text>{task.label}</Text>
-                    <Radio.Group
-                      onChange={e => setTaskPrefs({
-                        ...taskPrefs,
-                        [task.id]: e.target.value
-                      })}
-                      value={taskPrefs[task.id]}
-                    >
-                      <Space direction="vertical">
-                        <Radio value="like">喜欢</Radio>
-                        <Radio value="neutral">中立</Radio>
-                        <Radio value="dislike">不喜欢</Radio>
-                      </Space>
-                    </Radio.Group>
-                  </Card>
-                </Col>
+                <View key={task.id} style={styles.taskCard}>
+                  <Text style={styles.taskLabel}>{task.label}</Text>
+                  <RadioButton.Group
+                    onValueChange={value => setTaskPrefs({
+                      ...taskPrefs,
+                      [task.id]: value
+                    })}
+                    value={taskPrefs[task.id]}
+                  >
+                    <View style={styles.radioGroup}>
+                      <View style={styles.radioItem}>
+                        <RadioButton value="like" />
+                        <Text>喜欢</Text>
+                      </View>
+                      <View style={styles.radioItem}>
+                        <RadioButton value="neutral" />
+                        <Text>中立</Text>
+                      </View>
+                      <View style={styles.radioItem}>
+                        <RadioButton value="dislike" />
+                        <Text>不喜欢</Text>
+                      </View>
+                    </View>
+                  </RadioButton.Group>
+                </View>
               ))}
-            </Row>
-          </div>
-        ))}
-      </Card>
+            </View>
+          ))}
+        </View>
 
-      {/* 时间偏好部分 */}
-      <Card title="时间偏好设置">
-        <Select
-          mode="multiple"
-          style={{ width: '100%' }}
-          placeholder="选择偏好的任务时间段"
-          onChange={setPreferredTime}
-          options={timePreferences}
-        />
-      </Card>
-    </div>
+        {/* 时间偏好部分 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>时间偏好设置</Text>
+          <SelectList
+            setSelected={setPreferredTime}
+            data={timePreferences}
+            save="key"
+            placeholder="选择偏好的时间段"
+            searchPlaceholder="搜索时间段"
+            multiple={true}
+            boxStyles={styles.selectBox}
+            dropdownStyles={styles.dropdown}
+            dropdownTextStyles={styles.dropdownText}
+            inputStyles={styles.selectInput}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  section: {
+    marginBottom: 20,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  categoryContainer: {
+    marginBottom: 15,
+  },
+  categoryTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  skillsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 10,
+  },
+  skillTag: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 20,
+    padding: 8,
+    margin: 4,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  skillTagSelected: {
+    backgroundColor: '#1890ff',
+    borderColor: '#1890ff',
+  },
+  skillTagText: {
+    color: '#666',
+  },
+  skillTagTextSelected: {
+    color: '#fff',
+  },
+  taskCard: {
+    backgroundColor: '#f9f9f9',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  taskLabel: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  radioGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  radioItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  selectBox: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: '#fff',
+  },
+  dropdown: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    marginTop: 5,
+  },
+  dropdownText: {
+    color: '#333',
+    fontSize: 16,
+  },
+  selectInput: {
+    color: '#333',
+    fontSize: 16,
+  },
+});
 
 export default Choice_preference; 
