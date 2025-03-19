@@ -3,33 +3,37 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useTheme } from 'react-native-paper';
 
 // 导入所有页面
 import LogIn from '../Log_in';
 import PrivateInformation from '../Private_information';
 import AbilityChoice from '../Ability_choice';
-import Index from '../Index';
+import Home from '../Index';
 import Achievement from '../Achievement';
 import AIAssistant from '../AI_assistant';
 import Community from '../Community';
 import GroupChat from '../Group_chat';
 import PersonCenter from '../Person_center';
 import Ranking from '../Ranking';
-import Shopping from '../Shopping';
+import Shopping from '../shopping';
 import Setting from '../Setting';
 import TaskDetail from '../Task_detail';
 import CreateTask from '../Create_task';
 import PostDetail from '../Post_detail';
 import CreatePost from '../Create_post';
+import ExchangeHistory from '../ExchangeHistory';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MainTabs = () => {
+  const theme = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#6200ee',
+        tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: '#666',
         tabBarStyle: {
           paddingBottom: 5,
@@ -39,7 +43,7 @@ const MainTabs = () => {
     >
       <Tab.Screen
         name="Home"
-        component={Index}
+        component={Home}
         options={{
           title: '首页',
           tabBarIcon: ({ color, size }) => (
@@ -54,6 +58,16 @@ const MainTabs = () => {
           title: '社区',
           tabBarIcon: ({ color, size }) => (
             <Icon name="account-group" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Shopping"
+        component={Shopping}
+        options={{
+          title: '积分商城',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="shopping" size={size} color={color} />
           ),
         }}
       />
@@ -78,9 +92,9 @@ const AppNavigator = () => {
         initialRouteName="LogIn"
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#fff',
           },
-          headerTintColor: '#fff',
+          headerTintColor: '#333',
           headerTitleStyle: {
             fontWeight: 'bold',
           },
@@ -117,11 +131,6 @@ const AppNavigator = () => {
           options={{ title: '积分排行' }}
         />
         <Stack.Screen 
-          name="Shopping" 
-          component={Shopping}
-          options={{ title: '积分商城' }}
-        />
-        <Stack.Screen 
           name="Setting" 
           component={Setting}
           options={{ title: '设置' }}
@@ -139,12 +148,26 @@ const AppNavigator = () => {
         <Stack.Screen 
           name="PostDetail" 
           component={PostDetail}
-          options={{ title: '帖子详情' }}
+          options={{
+            title: '帖子详情',
+            headerBackTitle: '返回',
+          }}
         />
         <Stack.Screen 
           name="CreatePost" 
           component={CreatePost}
-          options={{ title: '发布帖子' }}
+          options={{
+            title: '发布帖子',
+            headerBackTitle: '返回',
+          }}
+        />
+        <Stack.Screen
+          name="ExchangeHistory"
+          component={ExchangeHistory}
+          options={{
+            title: '兑换记录',
+            headerBackTitle: '返回',
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
