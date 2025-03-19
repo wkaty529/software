@@ -1,43 +1,249 @@
-import React, { Component } from 'react'
-import { Text, View } from 'react-native'
-import { StyleSheet } from 'react-native';
-export default class Index extends Component {
-  render() {
-    return (
-      <View>
-        <Text style={[{color:'red'},{fontSize:25},{fontWeight:'bold'},{margin:81}]}> 家务任务自动分配软件 </Text>
-        <Text style={styles.instructions}> 核心需求： </Text>
-        <Text style={styles.welcome}> 任务分配及公平性 </Text>
-        <Text style={styles.welcome}> 任务跟踪与提醒 </Text>
-        <Text style={styles.welcome}> 任务分类与优先级 </Text>
-        <Text style={styles.welcome}> 多设备同步 </Text>
-        <Text style={styles.welcome}> 奖励机制 </Text>
-        <Text style={styles.welcome}> 隐私保护与数据安全 </Text>
-        <Text style={styles.welcome}> 同样适用于单身群体和小家庭 </Text>
-        <Text style={styles.instructions}> 用户角色： </Text>
-        <Text style={styles.welcome}> 管理员（家长） </Text>
-        <Text style={styles.welcome}> 成员（孩子、配偶） </Text>
-        
-      </View>
-    )
-  }
-}
+import React, { useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
+import {
+  Text,
+  Surface,
+  Button,
+  Card,
+  Avatar,
+  useTheme,
+  FAB,
+} from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const mockTasks = [
+  {
+    id: 1,
+    title: '打扫客厅',
+    description: '扫地、拖地、擦桌子',
+    points: 50,
+    deadline: '今天 18:00',
+    assignee: {
+      name: '张三',
+      avatar: null,
+    },
+  },
+  {
+    id: 2,
+    title: '准备晚餐',
+    description: '煮饭、炒菜',
+    points: 80,
+    deadline: '今天 19:00',
+    assignee: {
+      name: '李四',
+      avatar: null,
+    },
+  },
+];
+
+const Index = ({ navigation }) => {
+  const [refreshing, setRefreshing] = useState(false);
+  const [tasks, setTasks] = useState(mockTasks);
+  const theme = useTheme();
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    // TODO: 实现刷新逻辑
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
+  const handleCreateTask = (newTask) => {
+    setTasks(prevTasks => [newTask, ...prevTasks]);
+  };
+
+  const handleTaskPress = (taskId) => {
+    navigation.navigate('TaskDetail', { 
+      taskId,
+      onTaskStatusChange: (taskId, newStatus) => {
+        setTasks(prevTasks =>
+          prevTasks.map(task =>
+            task.id === taskId
+              ? { ...task, status: newStatus }
+              : task
+          )
+        );
+      }
+    });
+  };
+
+  return (
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      {/* 用户信息卡片 */}
+      <Surface style={styles.userCard}>
+        <View style={styles.userInfo}>
+          <Avatar.Image
+            size={60}
+            source={require('./assets/default-avatar.png')}
+            style={styles.avatar}
+          />
+          <View style={styles.userText}>
+            <Text style={styles.userName}>王小明</Text>
+            <Text style={styles.userPoints}>积分: 1280</Text>
+          </View>
+        </View>
+        <View style={styles.statsContainer}>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>{tasks.filter(t => t.status === 'completed').length}</Text>
+            <Text style={styles.statLabel}>完成任务</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>{tasks.filter(t => t.status === 'pending').length}</Text>
+            <Text style={styles.statLabel}>待处理</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>{tasks.filter(t => t.status === 'in_progress').length}</Text>
+            <Text style={styles.statLabel}>进行中</Text>
+          </View>
+        </View>
+      </Surface>
+
+      {/* 今日任务 */}
+      <Text style={styles.sectionTitle}>今日任务</Text>
+      {tasks.map(task => (
+        <Card 
+          key={task.id} 
+          style={styles.taskCard}
+          onPress={() => handleTaskPress(task.id)}
+        >
+          <Card.Content>
+            <View style={styles.taskHeader}>
+              <Text style={styles.taskTitle}>{task.title}</Text>
+              <Text style={styles.taskPoints}>{task.points} 积分</Text>
+            </View>
+            <Text style={styles.taskDescription}>{task.description}</Text>
+            <View style={styles.taskFooter}>
+              <View style={styles.assigneeInfo}>
+                <Avatar.Image
+                  size={24}
+                  source={task.assignee.avatar || require('./assets/default-avatar.png')}
+                />
+                <Text style={styles.assigneeName}>{task.assignee.name}</Text>
+              </View>
+              <Text style={styles.deadline}>{task.deadline}</Text>
+            </View>
+          </Card.Content>
+        </Card>
+      ))}
+
+      {/* 快速操作按钮 */}
+      <FAB
+        icon="plus"
+        style={styles.fab}
+        onPress={() => navigation.navigate('CreateTask', {
+          onTaskCreated: handleCreateTask
+        })}
+      />
+    </ScrollView>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  userCard: {
+    margin: 16,
+    padding: 16,
+    borderRadius: 10,
+    elevation: 4,
+  },
+  userInfo: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    marginBottom: 16,
   },
-  welcome: {
+  avatar: {
+    marginRight: 16,
+  },
+  userText: {
+    flex: 1,
+  },
+  userName: {
     fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-    backgroundColor:'#aabbcc'
+    fontWeight: 'bold',
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-  }
-})
+  userPoints: {
+    fontSize: 16,
+    color: '#666',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#666',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    margin: 16,
+    marginTop: 0,
+  },
+  taskCard: {
+    margin: 16,
+    marginTop: 0,
+  },
+  taskHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  taskTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  taskPoints: {
+    color: '#6200ee',
+    fontWeight: 'bold',
+  },
+  taskDescription: {
+    color: '#666',
+    marginBottom: 8,
+  },
+  taskFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  assigneeInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  assigneeName: {
+    marginLeft: 8,
+  },
+  deadline: {
+    color: '#666',
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
+});
+
+export default Index;
 

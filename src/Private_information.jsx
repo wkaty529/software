@@ -1,106 +1,162 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Menu, Button } from 'react-native-paper';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Platform,
+} from 'react-native';
+import {
+  TextInput,
+  Button,
+  Text,
+  Surface,
+  Avatar,
+  useTheme,
+} from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as ImagePicker from 'react-native-image-picker';
 
-// 在组件外部添加一个函数来计算每个月的天数
-// 修改为生成日期数组的函数
-function getDaysInMonth(year, month) {
-  const days = new Date(year, month, 0).getDate();
-  return Array.from({ length: days }, (_, i) => i + 1);
-}
+const PrivateInformation = ({ navigation }) => {
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('');
+  const [avatar, setAvatar] = useState(null);
+  const theme = useTheme();
 
-const Private_information = () => {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedDay, setSelectedDay] = useState(new Date().getDate());
-  const [visibleYear, setVisibleYear] = useState(false);
-  const [visibleMonth, setVisibleMonth] = useState(false);
-  const [visibleDay, setVisibleDay] = useState(false);
+  const handleImagePick = () => {
+    ImagePicker.launchImageLibrary({
+      mediaType: 'photo',
+      includeBase64: true,
+    }, (response) => {
+      if (response.didCancel) {
+        return;
+      }
+      if (response.assets && response.assets[0]) {
+        setAvatar(response.assets[0].uri);
+      }
+    });
+  };
 
-  const years = Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i);
-  const months = Array.from({ length: 12 }, (_, i) => i + 1);
-
-  // 添加性别选择状态
-  const [selectedGender, setSelectedGender] = useState(null);
+  const handleSubmit = () => {
+    // TODO: 实现信息提交逻辑
+    navigation.navigate('AbilityChoice');
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.hintText}> 这个框可以用来做提示，提示用户请真实选择，选择的数据信息将用于后续任务分配的依据 </Text>
-      <View style={styles.pickerRow}>
-        {/* 年份选择器 */}
-        <Menu
-          visible={visibleYear}
-          onDismiss={() => setVisibleYear(false)}
-          anchor={<Button onPress={() => setVisibleYear(true)}>{selectedYear}</Button>}
-        >
-          {years.map((year) => (
-            <Menu.Item key={year} onPress={() => { setSelectedYear(year); setVisibleYear(false); }} title={year.toString()} />
-          ))}
-        </Menu>
-        {/* 月份选择器 */}
-        <Menu
-          visible={visibleMonth}
-          onDismiss={() => setVisibleMonth(false)}
-          anchor={<Button onPress={() => setVisibleMonth(true)}>{selectedMonth}</Button>}
-        >
-          {months.map((month) => (
-            <Menu.Item key={month} onPress={() => { setSelectedMonth(month); setVisibleMonth(false); }} title={month.toString()} />
-          ))}
-        </Menu>
-        {/* 动态生成日期选择器 */}
-        <Menu
-          visible={visibleDay}
-          onDismiss={() => setVisibleDay(false)}
-          anchor={<Button onPress={() => setVisibleDay(true)}>{selectedDay}</Button>}
-        >
-          {getDaysInMonth(selectedYear, selectedMonth).map((day) => (
-            <Menu.Item key={day} onPress={() => { setSelectedDay(day); setVisibleDay(false); }} title={day.toString()} />
-          ))}
-        </Menu>
-      </View>
-      {/* 性别选择按钮 */}
-      <View style={styles.genderButtonRow}>
-        <Button
-          mode={selectedGender === 'male' ? 'contained' : 'outlined'}
-          // 修改：移除 disabled 属性
-          onPress={() => setSelectedGender('male')}
-        >
-          男
-        </Button>
-        <Button
-          mode={selectedGender === 'female' ? 'contained' : 'outlined'}
-          // 修改：移除 disabled 属性
-          onPress={() => setSelectedGender('female')}
-        >
-          女
-        </Button>
-      </View>
-    </View>
+    <ScrollView style={styles.container}>
+      <Surface style={styles.surface}>
+        <View style={styles.avatarContainer}>
+          <Avatar.Image
+            size={120}
+            source={avatar ? { uri: avatar } : require('./assets/default-avatar.png')}
+            style={styles.avatar}
+          />
+          <Button
+            mode="outlined"
+            onPress={handleImagePick}
+            style={styles.avatarButton}
+          >
+            更换头像
+          </Button>
+        </View>
+
+        <View style={styles.formContainer}>
+          <TextInput
+            label="姓名"
+            value={name}
+            onChangeText={setName}
+            mode="outlined"
+            style={styles.input}
+          />
+
+          <TextInput
+            label="年龄"
+            value={age}
+            onChangeText={setAge}
+            mode="outlined"
+            style={styles.input}
+            keyboardType="numeric"
+          />
+
+          <View style={styles.genderContainer}>
+            <Text style={styles.label}>性别</Text>
+            <View style={styles.genderButtons}>
+              <Button
+                mode={gender === 'male' ? 'contained' : 'outlined'}
+                onPress={() => setGender('male')}
+                style={styles.genderButton}
+              >
+                男
+              </Button>
+              <Button
+                mode={gender === 'female' ? 'contained' : 'outlined'}
+                onPress={() => setGender('female')}
+                style={styles.genderButton}
+              >
+                女
+              </Button>
+            </View>
+          </View>
+
+          <Button
+            mode="contained"
+            onPress={handleSubmit}
+            style={styles.submitButton}
+            disabled={!name || !age || !gender}
+          >
+            下一步
+          </Button>
+        </View>
+      </Surface>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  surface: {
+    margin: 16,
+    padding: 16,
+    borderRadius: 10,
+    elevation: 4,
+  },
+  avatarContainer: {
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  hintText: {
     marginBottom: 20,
-    textAlign: 'center'
   },
-  pickerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%'
+  avatar: {
+    backgroundColor: '#e0e0e0',
   },
-  genderButtonRow: {
+  avatarButton: {
+    marginTop: 10,
+  },
+  formContainer: {
+    gap: 15,
+  },
+  input: {
+    backgroundColor: 'transparent',
+  },
+  genderContainer: {
+    marginTop: 10,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  genderButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginTop: 20
-  }
+    gap: 10,
+  },
+  genderButton: {
+    flex: 1,
+  },
+  submitButton: {
+    marginTop: 20,
+    paddingVertical: 8,
+  },
 });
 
-export default Private_information;
+export default PrivateInformation;
