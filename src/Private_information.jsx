@@ -13,7 +13,6 @@ import {
   Avatar,
   useTheme,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { CommonImages } from './assets/images';
 

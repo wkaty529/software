@@ -16,7 +16,6 @@ import {
   Divider,
   useTheme,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CommonImages } from './assets/images';
 
 const PostDetail = ({ route, navigation }) => {

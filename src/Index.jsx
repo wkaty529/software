@@ -14,7 +14,6 @@ import {
   useTheme,
   FAB,
 } from 'react-native-paper';
-import CustomIcon from './components/CustomIcon';
 import { CommonImages } from './assets/images';
 // 使用导航回调
 import { useFocusEffect } from '@react-navigation/native';

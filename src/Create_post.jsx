@@ -16,7 +16,6 @@ import {
   Chip,
   IconButton,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const CreatePost = ({ route, navigation }) => {
   const { onPostCreated } = route.params;

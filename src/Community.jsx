@@ -17,7 +17,6 @@ import {
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPosts, setFilters, addPost, updatePost } from './store/slices/postsSlice';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CommonImages } from './assets/images';
 
 const categories = [

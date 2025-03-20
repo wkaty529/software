@@ -15,7 +15,6 @@ import {
   IconButton,
   useTheme,
 } from 'react-native-paper';
-import CustomIcon from './components/CustomIcon';
 import { CommonImages } from './assets/images';
 
 const CreateTask = ({ navigation }) => {

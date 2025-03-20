@@ -13,7 +13,6 @@ import {
   Divider,
   useTheme,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Setting = ({ navigation }) => {
   const [notifications, setNotifications] = useState(true);
