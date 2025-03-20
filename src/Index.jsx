@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,8 +14,10 @@ import {
   useTheme,
   FAB,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomIcon from './components/CustomIcon';
 import { CommonImages } from './assets/images';
+// 使用导航回调
+import { useFocusEffect } from '@react-navigation/native';
 
 const mockTasks = [
   {
@@ -42,10 +44,30 @@ const mockTasks = [
   },
 ];
 
-const Index = ({ navigation }) => {
+const Index = ({ navigation, route }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [tasks, setTasks] = useState(mockTasks);
   const theme = useTheme();
+
+  // 使用焦点效果检查是否有新创建的任务
+  useFocusEffect(
+    React.useCallback(() => {
+      // 从route.params中获取新任务数据
+      if (route.params?.newTask) {
+        handleCreateTask(route.params.newTask);
+        // 重置参数，避免重复添加
+        navigation.setParams({ newTask: undefined });
+      }
+      
+      // 检查任务状态更新
+      if (route.params?.updatedTaskId && route.params?.newStatus) {
+        const { updatedTaskId, newStatus } = route.params;
+        handleTaskStatusChange(updatedTaskId, newStatus);
+        // 重置参数，避免重复更新
+        navigation.setParams({ updatedTaskId: undefined, newStatus: undefined });
+      }
+    }, [route.params])
+  );
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -59,19 +81,18 @@ const Index = ({ navigation }) => {
     setTasks(prevTasks => [newTask, ...prevTasks]);
   };
 
+  const handleTaskStatusChange = (taskId, newStatus) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId
+          ? { ...task, status: newStatus }
+          : task
+      )
+    );
+  };
+
   const handleTaskPress = (taskId) => {
-    navigation.navigate('TaskDetail', { 
-      taskId,
-      onTaskStatusChange: (taskId, newStatus) => {
-        setTasks(prevTasks =>
-          prevTasks.map(task =>
-            task.id === taskId
-              ? { ...task, status: newStatus }
-              : task
-          )
-        );
-      }
-    });
+    navigation.navigate('TaskDetail', { taskId });
   };
 
   return (
@@ -142,9 +163,7 @@ const Index = ({ navigation }) => {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => navigation.navigate('CreateTask', {
-          onTaskCreated: handleCreateTask
-        })}
+        onPress={() => navigation.navigate('CreateTask')}
       />
     </ScrollView>
   );

@@ -11,7 +11,7 @@ import {
   Chip,
   useTheme,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomIcon from './components/CustomIcon';
 
 const skills = [
   { id: 'cooking', name: '烹饪', icon: 'food' },
@@ -43,6 +43,16 @@ const AbilityChoice = ({ navigation }) => {
     navigation.navigate('MainTabs');
   };
 
+  const renderIcon = (iconName, isSelected) => {
+    return (
+      <CustomIcon 
+        name={iconName} 
+        size={20} 
+        color={isSelected ? '#ffffff' : theme.colors.primary} 
+      />
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Surface style={styles.surface}>
@@ -50,17 +60,25 @@ const AbilityChoice = ({ navigation }) => {
         <Text style={styles.subtitle}>选择你擅长或愿意学习的家务技能</Text>
 
         <View style={styles.skillsContainer}>
-          {skills.map(skill => (
-            <Chip
-              key={skill.id}
-              selected={selectedSkills.includes(skill.id)}
-              onPress={() => toggleSkill(skill.id)}
-              style={styles.chip}
-              icon={() => <Icon name={skill.icon} size={20} />}
-            >
-              {skill.name}
-            </Chip>
-          ))}
+          {skills.map(skill => {
+            const isSelected = selectedSkills.includes(skill.id);
+            return (
+              <Chip
+                key={skill.id}
+                selected={isSelected}
+                onPress={() => toggleSkill(skill.id)}
+                style={[
+                  styles.chip,
+                  isSelected && styles.selectedChip
+                ]}
+                textStyle={isSelected ? styles.selectedChipText : null}
+                icon={({ size }) => renderIcon(skill.icon, isSelected)}
+                selectedColor="#ffffff"
+              >
+                {skill.name}
+              </Chip>
+            );
+          })}
         </View>
 
         <Button
@@ -105,6 +123,13 @@ const styles = StyleSheet.create({
   },
   chip: {
     margin: 4,
+    backgroundColor: '#f0e6ff',
+  },
+  selectedChip: {
+    backgroundColor: '#6200ee',
+  },
+  selectedChipText: {
+    color: '#ffffff',
   },
   submitButton: {
     marginTop: 20,

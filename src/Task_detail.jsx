@@ -18,7 +18,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CommonImages } from './assets/images';
 
 const TaskDetail = ({ route, navigation }) => {
-  const { taskId, onTaskStatusChange } = route.params;
+  const { taskId } = route.params;
   const [taskStatus, setTaskStatus] = useState('pending'); // pending, in_progress, completed
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([
@@ -77,9 +77,15 @@ const TaskDetail = ({ route, navigation }) => {
 
   const handleStatusChange = (newStatus) => {
     setTaskStatus(newStatus);
-    if (onTaskStatusChange) {
-      onTaskStatusChange(taskId, newStatus);
-    }
+    
+    // 使用导航参数返回更新的任务状态，而不是回调函数
+    navigation.navigate('MainTabs', {
+      screen: 'Home',
+      params: { 
+        updatedTaskId: taskId,
+        newStatus: newStatus
+      }
+    });
   };
 
   const handleComment = () => {

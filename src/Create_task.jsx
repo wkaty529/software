@@ -15,10 +15,10 @@ import {
   IconButton,
   useTheme,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomIcon from './components/CustomIcon';
 import { CommonImages } from './assets/images';
 
-const CreateTask = ({ navigation, route }) => {
+const CreateTask = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [points, setPoints] = useState('');
@@ -61,12 +61,11 @@ const CreateTask = ({ navigation, route }) => {
       comments: [],
     };
 
-    // 通过回调函数将新任务数据传递回首页
-    if (route.params?.onTaskCreated) {
-      route.params.onTaskCreated(newTask);
-    }
-
-    navigation.goBack();
+    // 使用导航参数返回新任务数据，而不是回调函数
+    navigation.navigate('MainTabs', { 
+      screen: 'Home', 
+      params: { newTask } 
+    });
   };
 
   return (

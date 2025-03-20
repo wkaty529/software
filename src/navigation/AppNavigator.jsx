@@ -2,8 +2,8 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from 'react-native-paper';
+import CustomIcon from '../components/CustomIcon';
 
 // 导入所有页面
 import LogIn from '../Log_in';
@@ -47,7 +47,7 @@ const MainTabs = () => {
         options={{
           title: '首页',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="home" size={size} color={color} />
+            <CustomIcon name="home" size={size} color={color} />
           ),
         }}
       />
@@ -57,7 +57,7 @@ const MainTabs = () => {
         options={{
           title: '社区',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="account-group" size={size} color={color} />
+            <CustomIcon name="account-group" size={size} color={color} />
           ),
         }}
       />
@@ -67,7 +67,7 @@ const MainTabs = () => {
         options={{
           title: '积分商城',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="shopping" size={size} color={color} />
+            <CustomIcon name="shopping" size={size} color={color} />
           ),
         }}
       />
@@ -77,7 +77,7 @@ const MainTabs = () => {
         options={{
           title: '我的',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="account" size={size} color={color} />
+            <CustomIcon name="account" size={size} color={color} />
           ),
         }}
       />

@@ -12,7 +12,7 @@ import {
   Button,
   useTheme,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomIcon from './components/CustomIcon';
 import { CommonImages } from './assets/images';
 
 const PersonCenter = ({ navigation }) => {

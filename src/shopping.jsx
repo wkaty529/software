@@ -21,7 +21,7 @@ import {
   Snackbar,
   Avatar,
 } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomIcon from './components/CustomIcon';
 import { ProductImages, CommonImages } from './assets/images';
 
 // 定义主题颜色
@@ -215,11 +215,11 @@ const Shopping = ({ navigation }) => {
       <View style={styles.ratingContainer}>
         {[...Array(5)].map((_, i) => {
           if (i < fullStars) {
-            return <Icon key={i} name="star" size={14} color="#FFD700" />;
+            return <CustomIcon key={i} name="star" size={14} color="#FFD700" />;
           } else if (i === fullStars && halfStar) {
-            return <Icon key={i} name="star-half-full" size={14} color="#FFD700" />;
+            return <CustomIcon key={i} name="star-half-full" size={14} color="#FFD700" />;
           } else {
-            return <Icon key={i} name="star-outline" size={14} color="#FFD700" />;
+            return <CustomIcon key={i} name="star-outline" size={14} color="#FFD700" />;
           }
         })}
         <Text style={styles.ratingText}>{rating.toFixed(1)}</Text>
@@ -237,7 +237,7 @@ const Shopping = ({ navigation }) => {
         <Surface style={styles.header}>
           <View style={styles.headerTop}>
             <View style={styles.pointsContainer}>
-              <Icon name="coin" size={24} color={COLORS.accent} style={styles.pointsIcon} />
+              <CustomIcon name="coin" size={24} color={COLORS.accent} style={styles.pointsIcon} />
               <View>
                 <Text style={styles.pointsLabel}>我的积分</Text>
                 <Text style={styles.pointsValue}>{userPoints}</Text>
@@ -280,7 +280,7 @@ const Shopping = ({ navigation }) => {
               selectedCategory === category && styles.categoryChipSelected
             ]}
             icon={() => (
-              <Icon 
+              <CustomIcon 
                 name={CATEGORY_ICONS[category]} 
                 size={18} 
                 color={selectedCategory === category ? '#fff' : COLORS.primary} 
@@ -323,7 +323,7 @@ const Shopping = ({ navigation }) => {
                 <View style={styles.productMeta}>
                   <View style={styles.pointsAndStock}>
                     <View style={styles.productPointsContainer}>
-                      <Icon name="coin" size={16} color={COLORS.accent} />
+                      <CustomIcon name="coin" size={16} color={COLORS.accent} />
                       <Text style={styles.productPoints}>{product.points} 积分</Text>
                     </View>
                     <View style={styles.statsContainer}>
@@ -395,19 +395,19 @@ const Shopping = ({ navigation }) => {
                       <View style={styles.dialogProductDetails}>
                         <Text style={styles.dialogProductName}>{selectedProduct.name}</Text>
                         <View style={styles.dialogProductPoints}>
-                          <Icon name="coin" size={16} color={COLORS.accent} />
+                          <CustomIcon name="coin" size={16} color={COLORS.accent} />
                           <Text style={styles.dialogPointsText}>{selectedProduct.points} 积分</Text>
                         </View>
                       </View>
                     </View>
                     <View style={styles.dialogAddressContainer}>
-                      <Icon name="map-marker" size={16} color={COLORS.primary} style={styles.dialogIcon} />
+                      <CustomIcon name="map-marker" size={16} color={COLORS.primary} style={styles.dialogIcon} />
                       <Text style={styles.dialogAddress}>
                         收货地址：{mockUserData.address}
                       </Text>
                     </View>
                     <View style={styles.dialogAddressContainer}>
-                      <Icon name="phone" size={16} color={COLORS.primary} style={styles.dialogIcon} />
+                      <CustomIcon name="phone" size={16} color={COLORS.primary} style={styles.dialogIcon} />
                       <Text style={styles.dialogAddress}>
                         联系电话：{mockUserData.phone}
                       </Text>
