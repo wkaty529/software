@@ -14,6 +14,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonImages } from './assets/images';
 
 const LogIn = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -28,7 +29,7 @@ const LogIn = ({ navigation }) => {
 
   return (
     <ImageBackground
-      source={require('./assets/background.jpg')}
+      source={CommonImages.background}
       style={styles.background}
     >
       <KeyboardAvoidingView

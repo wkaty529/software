@@ -16,6 +16,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonImages } from './assets/images';
 
 const CreateTask = ({ navigation, route }) => {
   const [title, setTitle] = useState('');
@@ -131,7 +132,7 @@ const CreateTask = ({ navigation, route }) => {
               <Avatar.Image
                 {...props}
                 size={40}
-                source={member.avatar || require('./assets/default-avatar.png')}
+                source={member.avatar || CommonImages.avatar}
               />
             )}
             right={props => (

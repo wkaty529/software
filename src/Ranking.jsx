@@ -12,6 +12,7 @@ import {
   SegmentedButtons,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonImages } from './assets/images';
 
 const mockRankings = {
   weekly: [
@@ -120,7 +121,7 @@ const Ranking = () => {
             <View style={styles.userInfo}>
               <Avatar.Image
                 size={50}
-                source={user.avatar || require('./assets/default-avatar.png')}
+                source={user.avatar || CommonImages.avatar}
               />
               <View style={styles.userText}>
                 <Text style={styles.userName}>{user.name}</Text>

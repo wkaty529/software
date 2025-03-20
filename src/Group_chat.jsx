@@ -15,6 +15,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonImages } from './assets/images';
 
 const mockMessages = [
   {
@@ -127,7 +128,7 @@ const GroupChat = () => {
             <View key={member.id} style={styles.memberItem}>
               <Avatar.Image
                 size={40}
-                source={member.avatar || require('./assets/default-avatar.png')}
+                source={member.avatar || CommonImages.avatar}
               />
               <View style={styles.memberInfo}>
                 <Text style={styles.memberName}>{member.name}</Text>
@@ -150,7 +151,7 @@ const GroupChat = () => {
             {!msg.isOwn && (
               <Avatar.Image
                 size={32}
-                source={msg.sender.avatar || require('./assets/default-avatar.png')}
+                source={msg.sender.avatar || CommonImages.avatar}
                 style={styles.messageAvatar}
               />
             )}

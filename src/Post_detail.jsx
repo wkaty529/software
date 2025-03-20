@@ -17,6 +17,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonImages } from './assets/images';
 
 const PostDetail = ({ route, navigation }) => {
   const { postId, onPostUpdate } = route.params;
@@ -85,7 +86,7 @@ const PostDetail = ({ route, navigation }) => {
             <View style={styles.authorInfo}>
               <Avatar.Image
                 size={40}
-                source={post.author.avatar || require('./assets/default-avatar.png')}
+                source={post.author.avatar || CommonImages.avatar}
               />
               <View style={styles.authorText}>
                 <Text style={styles.authorName}>{post.author.name}</Text>
@@ -133,7 +134,7 @@ const PostDetail = ({ route, navigation }) => {
                 <View style={styles.commentAuthorInfo}>
                   <Avatar.Image
                     size={32}
-                    source={require('./assets/default-avatar.png')}
+                    source={CommonImages.avatar}
                   />
                   <View style={styles.commentAuthorText}>
                     <Text style={styles.commentAuthorName}>{comment.author}</Text>

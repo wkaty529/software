@@ -15,6 +15,7 @@ import {
   FAB,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonImages } from './assets/images';
 
 const mockTasks = [
   {
@@ -85,7 +86,7 @@ const Index = ({ navigation }) => {
         <View style={styles.userInfo}>
           <Avatar.Image
             size={60}
-            source={require('./assets/default-avatar.png')}
+            source={CommonImages.avatar}
             style={styles.avatar}
           />
           <View style={styles.userText}>
@@ -127,7 +128,7 @@ const Index = ({ navigation }) => {
               <View style={styles.assigneeInfo}>
                 <Avatar.Image
                   size={24}
-                  source={task.assignee.avatar || require('./assets/default-avatar.png')}
+                  source={task.assignee.avatar || CommonImages.avatar}
                 />
                 <Text style={styles.assigneeName}>{task.assignee.name}</Text>
               </View>

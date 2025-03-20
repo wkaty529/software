@@ -14,7 +14,8 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import * as ImagePicker from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { CommonImages } from './assets/images';
 
 const PrivateInformation = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -24,7 +25,7 @@ const PrivateInformation = ({ navigation }) => {
   const theme = useTheme();
 
   const handleImagePick = () => {
-    ImagePicker.launchImageLibrary({
+    launchImageLibrary({
       mediaType: 'photo',
       includeBase64: true,
     }, (response) => {
@@ -48,7 +49,7 @@ const PrivateInformation = ({ navigation }) => {
         <View style={styles.avatarContainer}>
           <Avatar.Image
             size={120}
-            source={avatar ? { uri: avatar } : require('./assets/default-avatar.png')}
+            source={avatar ? { uri: avatar } : CommonImages.avatar}
             style={styles.avatar}
           />
           <Button

@@ -13,6 +13,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonImages } from './assets/images';
 
 const menuItems = [
   {
@@ -62,7 +63,7 @@ const PersonCenter = ({ navigation }) => {
         <View style={styles.userInfo}>
           <Avatar.Image
             size={80}
-            source={require('./assets/default-avatar.png')}
+            source={CommonImages.avatar}
             style={styles.avatar}
           />
           <View style={styles.userText}>

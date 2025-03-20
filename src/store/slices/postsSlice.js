@@ -111,4 +111,6 @@ const postsSlice = createSlice({
 
 export const { addPost, updatePost, setFilters, clearFilters } = postsSlice.actions;
 
+export default postsSlice.reducer;
+
  

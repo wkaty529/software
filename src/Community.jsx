@@ -16,7 +16,9 @@ import {
   Chip,
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPosts, setFilters, addPost } from './store/slices/postsSlice';
+import { fetchPosts, setFilters, addPost, updatePost } from './store/slices/postsSlice';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonImages } from './assets/images';
 
 const categories = [
   '全部',
@@ -161,7 +163,7 @@ const Community = ({ navigation }) => {
               <View style={styles.authorInfo}>
                 <Avatar.Image
                   size={40}
-                  source={post.author.avatar || require('./assets/default-avatar.png')}
+                  source={post.author.avatar || CommonImages.avatar}
                 />
                 <View style={styles.authorText}>
                   <Text style={styles.authorName}>{post.author.name}</Text>

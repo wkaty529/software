@@ -15,6 +15,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonImages } from './assets/images';
 
 const TaskDetail = ({ route, navigation }) => {
   const { taskId, onTaskStatusChange } = route.params;
@@ -144,7 +145,7 @@ const TaskDetail = ({ route, navigation }) => {
               <View style={styles.commentUser}>
                 <Avatar.Image
                   size={32}
-                  source={comment.user.avatar || require('./assets/default-avatar.png')}
+                  source={comment.user.avatar || CommonImages.avatar}
                 />
                 <Text style={styles.commentUserName}>{comment.user.name}</Text>
               </View>
