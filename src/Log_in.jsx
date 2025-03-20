@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -12,6 +12,7 @@ import {
   Text,
   Surface,
   useTheme,
+  HelperText,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CommonImages } from './assets/images';
@@ -20,11 +21,82 @@ const LogIn = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const theme = useTheme();
 
+  // 邮箱验证
+  const validateEmail = (text) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!text) {
+      setEmailError('请输入邮箱');
+      return false;
+    } else if (!emailRegex.test(text)) {
+      setEmailError('请输入有效的邮箱格式');
+      return false;
+    }
+    setEmailError('');
+    return true;
+  };
+
+  // 密码验证
+  const validatePassword = (text) => {
+    const hasLetter = /[a-zA-Z]/.test(text);
+    const hasNumber = /[0-9]/.test(text);
+    
+    if (!text) {
+      setPasswordError('请输入密码');
+      return false;
+    } else if (text.length < 6) {
+      setPasswordError('密码长度至少为6位');
+      return false;
+    } else if (!hasLetter || !hasNumber) {
+      setPasswordError('密码必须包含字母和数字');
+      return false;
+    }
+    setPasswordError('');
+    return true;
+  };
+
+  // 表单验证
+  useEffect(() => {
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+    setIsFormValid(isEmailValid && isPasswordValid);
+  }, [email, password]);
+
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    if (emailTouched) {
+      validateEmail(text);
+    }
+  };
+
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+    if (passwordTouched) {
+      validatePassword(text);
+    }
+  };
+
+  const handleEmailFocus = () => {
+    setEmailTouched(true);
+    validateEmail(email);
+  };
+
+  const handlePasswordFocus = () => {
+    setPasswordTouched(true);
+    validatePassword(password);
+  };
+
   const handleLogin = () => {
-    // TODO: 实现登录逻辑
-    navigation.navigate('PrivateInformation');
+    if (isFormValid) {
+      // TODO: 实现登录逻辑
+      navigation.navigate('PrivateInformation');
+    }
   };
 
   return (
@@ -43,35 +115,50 @@ const LogIn = ({ navigation }) => {
           </View>
 
           <View style={styles.formContainer}>
-            <TextInput
-              label="邮箱"
-              value={email}
-              onChangeText={setEmail}
-              mode="outlined"
-              style={styles.input}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
+            <View>
+              <TextInput
+                label="邮箱"
+                value={email}
+                onChangeText={handleEmailChange}
+                onFocus={handleEmailFocus}
+                mode="outlined"
+                style={styles.input}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={emailTouched && !!emailError}
+              />
+              {emailTouched && !!emailError && (
+                <HelperText type="error">{emailError}</HelperText>
+              )}
+            </View>
 
-            <TextInput
-              label="密码"
-              value={password}
-              onChangeText={setPassword}
-              mode="outlined"
-              style={styles.input}
-              secureTextEntry={secureTextEntry}
-              right={
-                <TextInput.Icon
-                  icon={secureTextEntry ? 'eye-off' : 'eye'}
-                  onPress={() => setSecureTextEntry(!secureTextEntry)}
-                />
-              }
-            />
+            <View>
+              <TextInput
+                label="密码"
+                value={password}
+                onChangeText={handlePasswordChange}
+                onFocus={handlePasswordFocus}
+                mode="outlined"
+                style={styles.input}
+                secureTextEntry={secureTextEntry}
+                error={passwordTouched && !!passwordError}
+                right={
+                  <TextInput.Icon
+                    icon={secureTextEntry ? 'eye-off' : 'eye'}
+                    onPress={() => setSecureTextEntry(!secureTextEntry)}
+                  />
+                }
+              />
+              {passwordTouched && !!passwordError && (
+                <HelperText type="error">{passwordError}</HelperText>
+              )}
+            </View>
 
             <Button
               mode="contained"
               onPress={handleLogin}
               style={styles.button}
+              disabled={!isFormValid}
             >
               登录
             </Button>

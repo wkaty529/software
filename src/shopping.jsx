@@ -279,6 +279,10 @@ const Shopping = ({ navigation }) => {
               styles.categoryChip, 
               selectedCategory === category && styles.categoryChipSelected
             ]}
+            textStyle={[
+              styles.categoryChipText,
+              selectedCategory === category && styles.categoryChipTextSelected
+            ]}
             icon={() => (
               <CustomIcon 
                 name={CATEGORY_ICONS[category]} 
@@ -292,6 +296,13 @@ const Shopping = ({ navigation }) => {
           </Chip>
         ))}
       </ScrollView>
+
+      {/* 滚动指示器 */}
+      <View style={styles.scrollIndicator}>
+        <View style={styles.scrollIndicatorDot} />
+        <View style={[styles.scrollIndicatorDot, styles.scrollIndicatorDotActive]} />
+        <View style={styles.scrollIndicatorDot} />
+      </View>
 
       <ScrollView style={styles.productsContainer}>
         {filteredProducts.length > 0 ? (
@@ -493,19 +504,31 @@ const styles = StyleSheet.create({
   },
   categoriesContainer: {
     marginTop: 8,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   categoriesContentContainer: {
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
   categoryChip: {
-    marginRight: 8,
+    marginRight: 12,
     backgroundColor: '#fff',
     borderColor: COLORS.border,
+    height: 40,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    minWidth: 80,
   },
   categoryChipSelected: {
     backgroundColor: COLORS.primary,
+  },
+  categoryChipText: {
+    fontSize: 14,
+    color: COLORS.primary,
+    marginHorizontal: 2,
+  },
+  categoryChipTextSelected: {
+    color: '#fff',
   },
   productsContainer: {
     padding: 16,
@@ -708,6 +731,23 @@ const styles = StyleSheet.create({
   },
   errorSnackbar: {
     backgroundColor: COLORS.error,
+  },
+  scrollIndicator: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  scrollIndicatorDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: COLORS.border,
+    marginHorizontal: 3,
+  },
+  scrollIndicatorDotActive: {
+    backgroundColor: COLORS.primary,
+    width: 12,
   },
 });
 
