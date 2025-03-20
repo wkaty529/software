@@ -15,47 +15,47 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CommonImages } from './assets/images';
 
-const menuItems = [
-  {
-    id: 'profile',
-    title: '个人资料',
-    icon: 'account-edit',
-    onPress: () => navigation.navigate('PrivateInformation'),
-  },
-  {
-    id: 'points',
-    title: '我的积分',
-    icon: 'star',
-    onPress: () => navigation.navigate('Ranking'),
-  },
-  {
-    id: 'tasks',
-    title: '我的任务',
-    icon: 'checkbox-marked-circle',
-    onPress: () => navigation.navigate('Index'),
-  },
-  {
-    id: 'achievements',
-    title: '我的成就',
-    icon: 'trophy',
-    onPress: () => navigation.navigate('Achievement'),
-  },
-  {
-    id: 'family',
-    title: '家庭成员',
-    icon: 'account-group',
-    onPress: () => navigation.navigate('GroupChat'),
-  },
-  {
-    id: 'settings',
-    title: '设置',
-    icon: 'cog',
-    onPress: () => navigation.navigate('Setting'),
-  },
-];
-
 const PersonCenter = ({ navigation }) => {
   const theme = useTheme();
+
+  const menuItems = [
+    {
+      id: 'profile',
+      title: '个人资料',
+      icon: 'account-edit',
+      onPress: () => navigation.navigate('PrivateInformation'),
+    },
+    {
+      id: 'points',
+      title: '我的积分',
+      icon: 'star',
+      onPress: () => navigation.navigate('Ranking'),
+    },
+    {
+      id: 'tasks',
+      title: '我的任务',
+      icon: 'checkbox-marked-circle',
+      onPress: () => navigation.navigate('Index'),
+    },
+    {
+      id: 'achievements',
+      title: '我的成就',
+      icon: 'trophy',
+      onPress: () => navigation.navigate('Achievement'),
+    },
+    {
+      id: 'family',
+      title: '家庭成员',
+      icon: 'account-group',
+      onPress: () => navigation.navigate('GroupChat'),
+    },
+    {
+      id: 'settings',
+      title: '设置',
+      icon: 'cog',
+      onPress: () => navigation.navigate('Setting'),
+    },
+  ];
 
   return (
     <ScrollView style={styles.container}>

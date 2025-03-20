@@ -40,7 +40,7 @@ const AbilityChoice = ({ navigation }) => {
 
   const handleSubmit = () => {
     // TODO: 实现技能提交逻辑
-    navigation.navigate('MainApp');
+    navigation.navigate('MainTabs');
   };
 
   return (

@@ -3,6 +3,7 @@ import {
   View,
   StyleSheet,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import {
   Text,
@@ -12,6 +13,8 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const { width } = Dimensions.get('window');
 
 const achievements = [
   {
@@ -64,10 +67,13 @@ const Achievement = () => {
   const theme = useTheme();
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <Surface style={styles.header}>
         <View style={styles.headerContent}>
-          <Icon name="trophy" size={40} color={theme.colors.primary} />
+          <Icon name="trophy" size={36} color={theme.colors.primary} />
           <View style={styles.headerText}>
             <Text style={styles.headerTitle}>我的成就</Text>
             <Text style={styles.headerSubtitle}>继续努力，解锁更多成就！</Text>
@@ -80,7 +86,7 @@ const Achievement = () => {
           <Surface key={achievement.id} style={styles.achievementCard}>
             <View style={styles.achievementHeader}>
               <Avatar.Icon
-                size={40}
+                size={36}
                 icon={achievement.icon}
                 style={[
                   styles.achievementIcon,
@@ -88,19 +94,23 @@ const Achievement = () => {
                 ]}
               />
               <View style={styles.achievementInfo}>
-                <Text style={styles.achievementTitle}>{achievement.title}</Text>
-                <Text style={styles.achievementDescription}>
+                <Text style={styles.achievementTitle} numberOfLines={1}>
+                  {achievement.title}
+                </Text>
+                <Text style={styles.achievementDescription} numberOfLines={2}>
                   {achievement.description}
                 </Text>
               </View>
             </View>
 
             <View style={styles.progressContainer}>
-              <ProgressBar
-                progress={achievement.progress}
-                color={achievement.isUnlocked ? theme.colors.primary : '#ccc'}
-                style={styles.progressBar}
-              />
+              <View style={styles.progressBarContainer}>
+                <ProgressBar
+                  progress={achievement.progress}
+                  color={achievement.isUnlocked ? theme.colors.primary : '#ccc'}
+                  style={styles.progressBar}
+                />
+              </View>
               <Text style={styles.progressText}>
                 {achievement.current}/{achievement.total}
               </Text>
@@ -122,9 +132,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  contentContainer: {
+    paddingBottom: 20,
+  },
   header: {
-    margin: 16,
-    padding: 16,
+    margin: 12,
+    padding: 14,
     borderRadius: 10,
     elevation: 4,
   },
@@ -133,29 +146,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerText: {
-    marginLeft: 16,
+    marginLeft: 14,
+    flex: 1,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666',
   },
   achievementsContainer: {
-    padding: 16,
+    paddingHorizontal: 12,
   },
   achievementCard: {
-    padding: 16,
+    padding: 14,
     borderRadius: 10,
-    marginBottom: 16,
+    marginBottom: 12,
     elevation: 2,
+    width: width - 24, // 考虑屏幕宽度减去左右边距
   },
   achievementHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   achievementIcon: {
     backgroundColor: '#e0e0e0',
@@ -164,31 +179,37 @@ const styles = StyleSheet.create({
     backgroundColor: '#6200ee',
   },
   achievementInfo: {
-    marginLeft: 16,
+    marginLeft: 12,
     flex: 1,
   },
   achievementTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   achievementDescription: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
+    marginTop: 2,
   },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
+    marginTop: 4,
   },
-  progressBar: {
+  progressBarContainer: {
     flex: 1,
-    height: 8,
-    borderRadius: 4,
     marginRight: 8,
   },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+  },
   progressText: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
+    width: 40, // 固定宽度
+    textAlign: 'right',
   },
   pointsContainer: {
     flexDirection: 'row',
@@ -196,7 +217,7 @@ const styles = StyleSheet.create({
   },
   pointsText: {
     marginLeft: 4,
-    fontSize: 14,
+    fontSize: 13,
     color: '#6200ee',
     fontWeight: 'bold',
   },

@@ -169,6 +169,14 @@ const AppNavigator = () => {
             headerBackTitle: '返回',
           }}
         />
+        <Stack.Screen
+          name="Achievement"
+          component={Achievement}
+          options={{
+            title: '我的成就',
+            headerBackTitle: '返回',
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
