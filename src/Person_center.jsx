@@ -49,6 +49,12 @@ const PersonCenter = ({ navigation }) => {
       onPress: () => navigation.navigate('GroupChat'),
     },
     {
+      id: 'special-scenarios',
+      title: '特殊情景设置',
+      icon: 'calendar-sync',
+      onPress: () => navigation.navigate('SpecialScenarios'),
+    },
+    {
       id: 'settings',
       title: '设置',
       icon: 'cog',

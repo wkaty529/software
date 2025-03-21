@@ -91,14 +91,44 @@ const taskPreferences = [
   { id: 'social', name: '社交型任务', icon: 'account-group', description: '偏好与人互动的任务' },
 ];
 
-// 时间偏好
+// 更新时间偏好数据结构
 const timeSlots = [
-  { id: 'morning', name: '早晨 (6-9点)', icon: 'weather-sunset-up' },
-  { id: 'before-noon', name: '上午 (9-12点)', icon: 'weather-sunny' },
-  { id: 'noon', name: '中午 (12-14点)', icon: 'weather-sunny' },
-  { id: 'afternoon', name: '下午 (14-18点)', icon: 'weather-sunset-down' },
-  { id: 'evening', name: '晚上 (18-22点)', icon: 'weather-night' },
-  { id: 'night', name: '夜间 (22-6点)', icon: 'moon-waning-crescent' },
+  {
+    id: 'early_morning',
+    timeRange: '6:00-8:00',
+    taskTypes: '晨练督导/早餐准备',
+    defaultStrength: 5,
+  },
+  {
+    id: 'morning',
+    timeRange: '9:00-11:00',
+    taskTypes: '家居整理/室内清洁',
+    defaultStrength: 4,
+  },
+  {
+    id: 'noon',
+    timeRange: '12:00-14:00',
+    taskTypes: '午餐准备/餐后整理',
+    defaultStrength: 3,
+  },
+  {
+    id: 'afternoon',
+    timeRange: '15:00-17:00',
+    taskTypes: '育儿看护/宠物照料',
+    defaultStrength: 4,
+  },
+  {
+    id: 'evening',
+    timeRange: '18:00-20:00',
+    taskTypes: '晚餐准备/家庭活动',
+    defaultStrength: 5,
+  },
+  {
+    id: 'night',
+    timeRange: '21:00-23:00',
+    taskTypes: '明日准备/休闲时光',
+    defaultStrength: 2,
+  },
 ];
 
 // 环境偏好数据
@@ -133,6 +163,40 @@ const environmentPreferences = [
   },
 ];
 
+// 情感价值偏好数据
+const emotionalPreferences = [
+  {
+    id: 'achievement',
+    name: '成就导向型',
+    description: '喜欢有明确目标和成果的任务，享受完成挑战的成就感',
+    icon: 'trophy',
+  },
+  {
+    id: 'relationship',
+    name: '关系导向型',
+    description: '偏好能够增进家庭成员互动和感情的任务类型',
+    icon: 'heart',
+  },
+  {
+    id: 'growth',
+    name: '成长导向型',
+    description: '偏好能够学习新技能或提升能力的任务类型',
+    icon: 'chart-line',
+  },
+  {
+    id: 'altruistic',
+    name: '利他导向型',
+    description: '愿意承担更多家务，减轻他人负担',
+    icon: 'hand-heart',
+  },
+  {
+    id: 'comfort',
+    name: '舒适优先型',
+    description: '偏好简单、熟悉且不会带来压力的任务',
+    icon: 'sofa',
+  },
+];
+
 const AbilityChoice = ({ navigation }) => {
   const theme = useTheme();
   
@@ -146,8 +210,13 @@ const AbilityChoice = ({ navigation }) => {
   // 任务类型偏好
   const [taskTypePreferences, setTaskTypePreferences] = useState([]);
   
-  // 时间偏好
-  const [timePreferences, setTimePreferences] = useState([]);
+  // 更新时间偏好状态管理
+  const [timePreferences, setTimePreferences] = useState(
+    timeSlots.reduce((acc, slot) => {
+      acc[slot.id] = slot.defaultStrength;
+      return acc;
+    }, {})
+  );
   
   // 环境偏好
   const [environmentValues, setEnvironmentValues] = useState({
@@ -163,8 +232,11 @@ const AbilityChoice = ({ navigation }) => {
   // 是否显示帮助模态框
   const [helpModalVisible, setHelpModalVisible] = useState(false);
   
+  // 情感价值偏好
+  const [emotionalValuePreferences, setEmotionalValuePreferences] = useState([]);
+  
   // 进度条值
-  const steps = ['技能选择', '任务偏好', '时间偏好', '环境偏好'];
+  const steps = ['技能选择', '任务偏好', '时间偏好', '情感价值偏好', '环境偏好'];
   const progress = (currentStep + 1) / steps.length;
 
   // 切换技能
@@ -189,13 +261,12 @@ const AbilityChoice = ({ navigation }) => {
     );
   };
 
-  // 切换时间偏好
-  const toggleTimePreference = (timeId) => {
-    setTimePreferences(prev => 
-      prev.includes(timeId)
-        ? prev.filter(id => id !== timeId)
-        : [...prev, timeId]
-    );
+  // 更新时间偏好处理函数
+  const handleTimePreferenceChange = (slotId, strength) => {
+    setTimePreferences({
+      ...timePreferences,
+      [slotId]: strength,
+    });
   };
 
   // 处理环境偏好变化
@@ -204,6 +275,15 @@ const AbilityChoice = ({ navigation }) => {
       ...prev,
       [prefId]: value
     }));
+  };
+
+  // 切换情感价值偏好
+  const toggleEmotionalPreference = (prefId) => {
+    setEmotionalValuePreferences(prev => 
+      prev.includes(prefId)
+        ? prev.filter(id => id !== prefId)
+        : [...prev, prefId]
+    );
   };
 
   // 下一步
@@ -235,8 +315,9 @@ const AbilityChoice = ({ navigation }) => {
     const userData = {
       skills: Object.keys(selectedSkills),
       taskPreferences: taskTypePreferences,
-      timePreferences,
-      environmentPreferences: environmentValues
+      timePreferences: timePreferences,
+      environmentPreferences: environmentValues,
+      emotionalValuePreferences
     };
     
     console.log('提交的用户数据:', userData);
@@ -368,36 +449,105 @@ const AbilityChoice = ({ navigation }) => {
     </View>
   );
 
-  // 渲染时间偏好
-  const renderTimePreferences = () => (
-    <View style={styles.preferencesSection}>
-      <Title style={styles.sectionTitle}>时间偏好</Title>
-      <Subheading style={styles.sectionSubtitle}>选择你偏好的工作时间段（可多选）</Subheading>
-      
-      <View style={styles.timeContainer}>
-        {timeSlots.map(time => (
-          <Chip
-            key={time.id}
-            selected={timePreferences.includes(time.id)}
-            onPress={() => toggleTimePreference(time.id)}
-            style={[
-              styles.timeChip,
-              timePreferences.includes(time.id) && styles.selectedTimeChip
-            ]}
-            textStyle={timePreferences.includes(time.id) ? styles.selectedChipText : styles.chipText}
-            icon={({ size }) => (
-              <CustomIcon 
-                name={time.icon} 
-                size={20} 
-                color={timePreferences.includes(time.id) ? '#ffffff' : theme.colors.primary} 
-              />
-            )}
-            selectedColor="#ffffff"
-          >
-            {time.name}
-          </Chip>
-        ))}
+  // 更新渲染时间偏好函数
+  const renderTimePreferences = () => {
+    return (
+      <View style={styles.timePreferencesContainer}>
+        <Subheading style={styles.sectionTitle}>设置您的时间偏好</Subheading>
+        <Text style={styles.sectionDescription}>
+          设置您在不同时间段的可用性强度，这将帮助我们更合理地分配任务
+        </Text>
+        
+        <Surface style={styles.timeTable}>
+          {/* 表头 */}
+          <View style={styles.timeTableHeader}>
+            <Text style={[styles.timeTableHeaderCell, styles.timeRangeCell]}>时间段</Text>
+            <Text style={[styles.timeTableHeaderCell, styles.taskTypesCell]}>适合任务类型</Text>
+            <Text style={[styles.timeTableHeaderCell, styles.strengthCell]}>偏好强度</Text>
+          </View>
+          
+          <Divider />
+          
+          {/* 时间表行 */}
+          {timeSlots.map((slot) => (
+            <View key={slot.id}>
+              <View style={styles.timeTableRow}>
+                <View style={[styles.timeTableCell, styles.timeRangeCell]}>
+                  <Text style={styles.timeRangeText}>{slot.timeRange}</Text>
+                </View>
+                
+                <View style={[styles.timeTableCell, styles.taskTypesCell]}>
+                  <Text style={styles.taskTypesText}>{slot.taskTypes}</Text>
+                </View>
+                
+                <View style={[styles.timeTableCell, styles.strengthCell]}>
+                  {/* 星级评分 */}
+                  <View style={styles.starsContainer}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <IconButton
+                        key={`${slot.id}-star-${star}`}
+                        icon={timePreferences[slot.id] >= star ? "star" : "star-outline"}
+                        size={18}
+                        color={timePreferences[slot.id] >= star ? "#FFD700" : "#C0C0C0"}
+                        onPress={() => handleTimePreferenceChange(slot.id, star)}
+                        style={styles.starButton}
+                      />
+                    ))}
+                  </View>
+                </View>
+              </View>
+              <Divider />
+            </View>
+          ))}
+        </Surface>
+        
+        <View style={styles.timePreferenceNote}>
+          <CustomIcon name="information" size={18} color={theme.colors.primary} />
+          <Text style={styles.timePreferenceNoteText}>
+            星级越高表示您在该时间段的可用性越强
+          </Text>
+        </View>
       </View>
+    );
+  };
+
+  // 渲染情感价值偏好
+  const renderEmotionalPreferences = () => (
+    <View style={styles.preferencesSection}>
+      <Title style={styles.sectionTitle}>情感价值偏好</Title>
+      <Subheading style={styles.sectionSubtitle}>选择能够激励你的任务类型（可多选）</Subheading>
+      
+      {emotionalPreferences.map(pref => (
+        <Card 
+          key={pref.id} 
+          style={[
+            styles.emotionalPrefCard,
+            emotionalValuePreferences.includes(pref.id) && styles.selectedEmotionalPrefCard
+          ]}
+          onPress={() => toggleEmotionalPreference(pref.id)}
+        >
+          <View style={styles.emotionalPrefContent}>
+            <View style={styles.emotionalPrefIconContainer}>
+              <CustomIcon 
+                name={pref.icon} 
+                size={28} 
+                color={emotionalValuePreferences.includes(pref.id) ? theme.colors.primary : '#666'} 
+              />
+            </View>
+            <View style={styles.emotionalPrefTextContainer}>
+              <Text style={styles.emotionalPrefTitle}>
+                <Text style={styles.emotionalPrefBullet}>• </Text>
+                {pref.name}:
+              </Text>
+              <Text style={styles.emotionalPrefDescription}>{pref.description}</Text>
+            </View>
+            <Checkbox
+              status={emotionalValuePreferences.includes(pref.id) ? 'checked' : 'unchecked'}
+              color={theme.colors.primary}
+            />
+          </View>
+        </Card>
+      ))}
     </View>
   );
 
@@ -484,6 +634,8 @@ const AbilityChoice = ({ navigation }) => {
       case 2:
         return renderTimePreferences();
       case 3:
+        return renderEmotionalPreferences();
+      case 4:
         return renderEnvironmentPreferences();
       default:
         return null;
@@ -504,7 +656,8 @@ const AbilityChoice = ({ navigation }) => {
           {currentStep === 0 && '请选择你擅长的家务技能。您可以通过上方的分类标签切换不同类别的技能。'}
           {currentStep === 1 && '请选择你偏好的任务类型。这将帮助系统更好地为你分配适合的任务。'}
           {currentStep === 2 && '请选择你偏好的工作时间段。系统会尽量根据你的时间偏好安排任务。'}
-          {currentStep === 3 && '请调整滑块设置你的环境偏好。这些信息将帮助系统更准确地匹配适合你的任务环境。'}
+          {currentStep === 3 && '请选择你偏好的情感价值类型。这将帮助系统更好地为你分配适合的任务。'}
+          {currentStep === 4 && '请调整滑块设置你的环境偏好。这些信息将帮助系统更准确地匹配适合你的任务环境。'}
         </Text>
         <Button
           mode="contained"
@@ -761,92 +914,73 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
   },
-  timeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 8,
+  timePreferencesContainer: {
+    marginTop: 16,
+    paddingHorizontal: 16,
   },
-  timeChip: {
-    margin: 6,
-    backgroundColor: '#f0e6ff',
-    paddingHorizontal: 8,
-    height: 42,
-    borderWidth: 1,
-    borderColor: '#e0d0ff',
-  },
-  selectedTimeChip: {
-    backgroundColor: '#6200ee',
-    borderColor: '#6200ee',
-  },
-  sliderContainer: {
-    marginBottom: 24,
-  },
-  sliderHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  sliderTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 8,
-  },
-  sliderContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  customSlider: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 40,
-  },
-  sliderTrack: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 4,
-    backgroundColor: '#d6d6d6',
-    borderRadius: 2,
-    marginHorizontal: 10,
-  },
-  sliderDot: {
-    width: 15,
-    height: 15,
-    borderRadius: 10,
-    backgroundColor: '#f0f0f0',
-    borderWidth: 1,
-    borderColor: '#d6d6d6',
+  timeTable: {
+    marginTop: 16,
+    borderRadius: 8,
+    overflow: 'hidden',
     elevation: 2,
   },
-  sliderDotActive: {
-    backgroundColor: '#6200ee',
-    borderColor: '#6200ee',
+  timeTableHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
   },
-  sliderButton: {
-    margin: 0,
+  timeTableHeaderCell: {
+    fontWeight: 'bold',
+    fontSize: 14,
+    color: '#555',
   },
-  sliderMin: {
-    width: 80,
-    fontSize: 12,
-    color: '#666',
+  timeTableRow: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
   },
-  sliderMax: {
-    width: 80,
-    fontSize: 12,
-    color: '#666',
-    textAlign: 'right',
+  timeTableCell: {
+    justifyContent: 'center',
   },
-  sliderValueIndicator: {
+  timeRangeCell: {
+    width: '25%',
+  },
+  timeRangeText: {
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  taskTypesCell: {
+    width: '45%',
+  },
+  taskTypesText: {
+    fontSize: 13,
+    color: '#444',
+  },
+  strengthCell: {
+    width: '30%',
     alignItems: 'center',
   },
-  sliderValueText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#6200ee',
+  starsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  starButton: {
+    margin: 0,
+    padding: 0,
+  },
+  timePreferenceNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    padding: 8,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 8,
+  },
+  timePreferenceNoteText: {
+    marginLeft: 8,
+    fontSize: 13,
+    color: '#555',
   },
   modalContent: {
     backgroundColor: 'white',
@@ -867,6 +1001,80 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     marginTop: 8,
+  },
+  emotionalPrefCard: {
+    marginBottom: 12,
+    borderRadius: 8,
+    overflow: 'hidden',
+    elevation: 1,
+  },
+  selectedEmotionalPrefCard: {
+    borderWidth: 2,
+    borderColor: '#6200ee',
+  },
+  emotionalPrefContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+  },
+  emotionalPrefIconContainer: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  emotionalPrefTextContainer: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  emotionalPrefTitle: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    marginBottom: 2,
+    color: '#333',
+  },
+  emotionalPrefBullet: {
+    color: theme.colors.primary,
+    fontWeight: 'bold',
+  },
+  emotionalPrefDescription: {
+    fontSize: 13,
+    color: '#666',
+    lineHeight: 18,
+  },
+  emotionalPreferencesContainer: {
+    marginTop: 16,
+    paddingHorizontal: 16,
+  },
+  emotionalPreferenceCard: {
+    marginBottom: 12,
+    borderRadius: 8,
+    elevation: 1,
+  },
+  selectedEmotionalPreferenceCard: {
+    backgroundColor: '#4A6FA5',
+  },
+  emotionalPreferenceContent: {
+    paddingVertical: 16,
+  },
+  emotionalPreferenceHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  emotionalPreferenceName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 12,
+  },
+  emotionalPreferenceDescription: {
+    fontSize: 14,
+    color: '#666',
+    paddingLeft: 36,
+  },
+  selectedEmotionalPreferenceText: {
+    color: '#FFFFFF',
   },
 });
 

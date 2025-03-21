@@ -517,18 +517,26 @@ const styles = StyleSheet.create({
     height: 40,
     paddingHorizontal: 16,
     borderRadius: 20,
-    minWidth: 80,
+    minWidth: 90,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderWidth: 1,
   },
   categoryChipSelected: {
     backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
   categoryChipText: {
     fontSize: 14,
     color: COLORS.primary,
-    marginHorizontal: 2,
+    marginLeft: 4,
+    marginRight: 4,
+    textAlign: 'center',
   },
   categoryChipTextSelected: {
     color: '#fff',
+    fontWeight: '500',
   },
   productsContainer: {
     padding: 16,

@@ -23,6 +23,7 @@ import CreateTask from '../Create_task';
 import PostDetail from '../Post_detail';
 import CreatePost from '../Create_post';
 import ExchangeHistory from '../ExchangeHistory';
+import SpecialScenarios from '../SpecialScenarios';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -174,6 +175,14 @@ const AppNavigator = () => {
           component={Achievement}
           options={{
             title: '我的成就',
+            headerBackTitle: '返回',
+          }}
+        />
+        <Stack.Screen
+          name="SpecialScenarios"
+          component={SpecialScenarios}
+          options={{
+            title: '特殊情景设置',
             headerBackTitle: '返回',
           }}
         />
