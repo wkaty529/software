@@ -487,7 +487,7 @@ const AbilityChoice = ({ navigation }) => {
                       <IconButton
                         key={`${slot.id}-star-${star}`}
                         icon={timePreferences[slot.id] >= star ? "star" : "star-outline"}
-                        size={18}
+                        size={16}
                         color={timePreferences[slot.id] >= star ? "#FFD700" : "#C0C0C0"}
                         onPress={() => handleTimePreferenceChange(slot.id, star)}
                         style={styles.starButton}
@@ -536,7 +536,7 @@ const AbilityChoice = ({ navigation }) => {
             </View>
             <View style={styles.emotionalPrefTextContainer}>
               <Text style={styles.emotionalPrefTitle}>
-                <Text style={styles.emotionalPrefBullet}>• </Text>
+                <Text style={{ color: theme.colors.primary, fontWeight: 'bold' }}>• </Text>
                 {pref.name}:
               </Text>
               <Text style={styles.emotionalPrefDescription}>{pref.description}</Text>
@@ -557,65 +557,71 @@ const AbilityChoice = ({ navigation }) => {
       <Title style={styles.sectionTitle}>环境偏好</Title>
       <Subheading style={styles.sectionSubtitle}>点击加减按钮设置你对环境的偏好</Subheading>
       
-      {environmentPreferences.map(pref => (
-        <View key={pref.id} style={styles.sliderContainer}>
-          <View style={styles.sliderHeader}>
-            <CustomIcon name={pref.icon} size={24} color={theme.colors.primary} />
-            <Text style={styles.sliderTitle}>{pref.name}</Text>
-          </View>
-          <View style={styles.sliderContent}>
-            <Text style={styles.sliderMin}>{pref.min}</Text>
-            
-            <View style={styles.customSlider}>
-              <IconButton
-                icon="minus"
-                size={20}
-                color={theme.colors.primary}
-                style={styles.sliderButton}
-                onPress={() => {
-                  if (environmentValues[pref.id] > 1) {
-                    handleEnvironmentChange(pref.id, environmentValues[pref.id] - 1);
-                  }
-                }}
-                disabled={environmentValues[pref.id] <= 1}
-              />
-              
-              <View style={styles.sliderTrack}>
-                {[1, 2, 3, 4, 5].map(value => (
-                  <View 
-                    key={value}
-                    style={[
-                      styles.sliderDot,
-                      value <= environmentValues[pref.id] ? styles.sliderDotActive : null
-                    ]}
-                    onTouchEnd={() => handleEnvironmentChange(pref.id, value)}
-                  />
-                ))}
+      <Surface style={styles.environmentPreferencesContainer}>
+        {environmentPreferences.map(pref => (
+          <View key={pref.id} style={styles.environmentPreferenceItem}>
+            <View style={styles.environmentPreferenceHeader}>
+              <View style={styles.environmentPreferenceIconTitle}>
+                <CustomIcon name={pref.icon} size={24} color={theme.colors.primary} />
+                <Text style={styles.environmentPreferenceTitle}>{pref.name}</Text>
               </View>
-              
-              <IconButton
-                icon="plus"
-                size={20}
-                color={theme.colors.primary}
-                style={styles.sliderButton}
-                onPress={() => {
-                  if (environmentValues[pref.id] < 5) {
-                    handleEnvironmentChange(pref.id, environmentValues[pref.id] + 1);
-                  }
-                }}
-                disabled={environmentValues[pref.id] >= 5}
-              />
+              <Text style={styles.environmentPreferenceValue}>{environmentValues[pref.id]}</Text>
             </View>
             
-            <Text style={styles.sliderMax}>{pref.max}</Text>
+            <View style={styles.environmentPreferenceSlider}>
+              <Text style={styles.environmentPreferenceMin}>{pref.min}</Text>
+              
+              <View style={styles.environmentPreferenceControls}>
+                <IconButton
+                  icon="minus"
+                  size={20}
+                  color={environmentValues[pref.id] > 1 ? theme.colors.primary : '#CCCCCC'}
+                  style={styles.environmentPreferenceButton}
+                  onPress={() => {
+                    if (environmentValues[pref.id] > 1) {
+                      handleEnvironmentChange(pref.id, environmentValues[pref.id] - 1);
+                    }
+                  }}
+                  disabled={environmentValues[pref.id] <= 1}
+                />
+                
+                <View style={styles.environmentPreferenceDotsContainer}>
+                  {[1, 2, 3, 4, 5].map(value => (
+                    <View 
+                      key={value}
+                      style={[
+                        styles.environmentPreferenceDot,
+                        value <= environmentValues[pref.id] ? styles.environmentPreferenceDotActive : null
+                      ]}
+                      onTouchEnd={() => handleEnvironmentChange(pref.id, value)}
+                    />
+                  ))}
+                </View>
+                
+                <IconButton
+                  icon="plus"
+                  size={20}
+                  color={environmentValues[pref.id] < 5 ? theme.colors.primary : '#CCCCCC'}
+                  style={styles.environmentPreferenceButton}
+                  onPress={() => {
+                    if (environmentValues[pref.id] < 5) {
+                      handleEnvironmentChange(pref.id, environmentValues[pref.id] + 1);
+                    }
+                  }}
+                  disabled={environmentValues[pref.id] >= 5}
+                />
+              </View>
+              
+              <Text style={styles.environmentPreferenceMax}>{pref.max}</Text>
+            </View>
+            
+            {/* 添加分隔线 */}
+            {pref.id !== environmentPreferences[environmentPreferences.length - 1].id && (
+              <Divider style={styles.environmentPreferenceDivider} />
+            )}
           </View>
-          <View style={styles.sliderValueIndicator}>
-            <Text style={styles.sliderValueText}>
-              {environmentValues[pref.id]}
-            </Text>
-          </View>
-        </View>
-      ))}
+        ))}
+      </Surface>
     </View>
   );
 
@@ -939,6 +945,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 8,
     paddingHorizontal: 8,
+    alignItems: 'center',
   },
   timeTableCell: {
     justifyContent: 'center',
@@ -964,9 +971,12 @@ const styles = StyleSheet.create({
   starsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   starButton: {
     margin: 0,
+    width: 20,
+    height: 20,
     padding: 0,
   },
   timePreferenceNote: {
@@ -1034,10 +1044,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     color: '#333',
   },
-  emotionalPrefBullet: {
-    color: theme.colors.primary,
-    fontWeight: 'bold',
-  },
   emotionalPrefDescription: {
     fontSize: 13,
     color: '#666',
@@ -1075,6 +1081,86 @@ const styles = StyleSheet.create({
   },
   selectedEmotionalPreferenceText: {
     color: '#FFFFFF',
+  },
+  environmentPreferencesContainer: {
+    marginTop: 8,
+    borderRadius: 8,
+    elevation: 2,
+    padding: 12,
+  },
+  environmentPreferenceItem: {
+    marginBottom: 12,
+  },
+  environmentPreferenceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  environmentPreferenceIconTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  environmentPreferenceTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 12,
+  },
+  environmentPreferenceValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#6200ee',
+    width: 24,
+    textAlign: 'center',
+  },
+  environmentPreferenceSlider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  environmentPreferenceMin: {
+    width: 70,
+    fontSize: 12,
+    color: '#666',
+  },
+  environmentPreferenceMax: {
+    width: 70,
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'right',
+  },
+  environmentPreferenceControls: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  environmentPreferenceButton: {
+    margin: 0,
+    padding: 0,
+  },
+  environmentPreferenceDotsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  environmentPreferenceDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#E0E0E0',
+    borderWidth: 1,
+    borderColor: '#D0D0D0',
+  },
+  environmentPreferenceDotActive: {
+    backgroundColor: '#6200ee',
+    borderColor: '#5000c0',
+  },
+  environmentPreferenceDivider: {
+    marginTop: 12,
+    marginBottom: 12,
   },
 });
 
