@@ -24,6 +24,8 @@ import PostDetail from '../Post_detail';
 import CreatePost from '../Create_post';
 import ExchangeHistory from '../ExchangeHistory';
 import SpecialScenarios from '../SpecialScenarios';
+import TabooSettings from '../TabooSettings';
+import AddCustomTaboo from '../AddCustomTaboo';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -183,6 +185,22 @@ const AppNavigator = () => {
           component={SpecialScenarios}
           options={{
             title: '特殊情景设置',
+            headerBackTitle: '返回',
+          }}
+        />
+        <Stack.Screen
+          name="TabooSettings"
+          component={TabooSettings}
+          options={{
+            title: '禁忌设置',
+            headerBackTitle: '返回',
+          }}
+        />
+        <Stack.Screen
+          name="AddCustomTaboo"
+          component={AddCustomTaboo}
+          options={{
+            title: '添加自定义禁忌',
             headerBackTitle: '返回',
           }}
         />

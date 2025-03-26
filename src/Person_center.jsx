@@ -34,7 +34,7 @@ const PersonCenter = ({ navigation }) => {
       id: 'tasks',
       title: '我的任务',
       icon: 'checkbox-marked-circle',
-      onPress: () => navigation.navigate('Index'),
+      onPress: () => navigation.navigate('MainTabs', { screen: 'Home' }),
     },
     {
       id: 'achievements',
@@ -47,6 +47,12 @@ const PersonCenter = ({ navigation }) => {
       title: '家庭成员',
       icon: 'account-group',
       onPress: () => navigation.navigate('GroupChat'),
+    },
+    {
+      id: 'taboo-settings',
+      title: '禁忌设置',
+      icon: 'block-helper',
+      onPress: () => navigation.navigate('TabooSettings'),
     },
     {
       id: 'special-scenarios',
