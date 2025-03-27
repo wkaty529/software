@@ -5,6 +5,8 @@ import {
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 import {
   TextInput,
@@ -13,6 +15,9 @@ import {
   Surface,
   useTheme,
   HelperText,
+  Divider,
+  Modal,
+  Portal,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CommonImages } from './assets/images';
@@ -26,6 +31,7 @@ const LogIn = ({ navigation }) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [loginModalVisible, setLoginModalVisible] = useState(false);
   const theme = useTheme();
 
   // 邮箱验证
@@ -94,84 +100,176 @@ const LogIn = ({ navigation }) => {
 
   const handleLogin = () => {
     if (isFormValid) {
-      // TODO: 实现登录逻辑
-      navigation.navigate('PrivateInformation');
+      // 实际登录逻辑
+      setLoginModalVisible(false);
+      navigation.navigate('MainTabs');
     }
   };
+
+  const handleGuest = () => {
+    // 游客访问，直接进入主页
+    navigation.navigate('MainTabs');
+  };
+
+  const handleStartRegister = () => {
+    // 跳转到注册页面
+    navigation.navigate('Register');
+  };
+
+  const showLoginModal = () => {
+    setLoginModalVisible(true);
+  };
+
+  const hideLoginModal = () => {
+    setLoginModalVisible(false);
+  };
+
+  const renderThirdPartyLogin = () => (
+    <View style={styles.thirdPartyContainer}>
+      <Text style={styles.dividerText}>使用第三方账号登录</Text>
+      <View style={styles.socialButtons}>
+        <TouchableOpacity 
+          style={styles.socialButton}
+          onPress={() => {
+            // 微信登录逻辑
+            hideLoginModal();
+            navigation.navigate('MainTabs');
+          }}
+        >
+          <Icon name="wechat" size={30} color="#07C160" />
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.socialButton}
+          onPress={() => {
+            // QQ登录逻辑
+            hideLoginModal();
+            navigation.navigate('MainTabs');
+          }}
+        >
+          <Icon name="qqchat" size={30} color="#12B7F5" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const renderLoginForm = () => (
+    <Portal>
+      <Modal
+        visible={loginModalVisible}
+        onDismiss={hideLoginModal}
+        contentContainerStyle={styles.modalContainer}
+      >
+        <Surface style={styles.modalSurface}>
+          <Text style={styles.modalTitle}>账号登录</Text>
+          
+          <View>
+            <TextInput
+              label="邮箱"
+              value={email}
+              onChangeText={handleEmailChange}
+              onFocus={handleEmailFocus}
+              mode="outlined"
+              style={styles.input}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              error={emailTouched && !!emailError}
+            />
+            {emailTouched && !!emailError && (
+              <HelperText type="error">{emailError}</HelperText>
+            )}
+          </View>
+
+          <View>
+            <TextInput
+              label="密码"
+              value={password}
+              onChangeText={handlePasswordChange}
+              onFocus={handlePasswordFocus}
+              mode="outlined"
+              style={styles.input}
+              secureTextEntry={secureTextEntry}
+              error={passwordTouched && !!passwordError}
+              right={
+                <TextInput.Icon
+                  icon={secureTextEntry ? 'eye-off' : 'eye'}
+                  onPress={() => setSecureTextEntry(!secureTextEntry)}
+                />
+              }
+            />
+            {passwordTouched && !!passwordError && (
+              <HelperText type="error">{passwordError}</HelperText>
+            )}
+          </View>
+
+          <Button
+            mode="contained"
+            onPress={handleLogin}
+            style={styles.button}
+            disabled={!isFormValid}
+          >
+            登录
+          </Button>
+
+          {renderThirdPartyLogin()}
+        </Surface>
+      </Modal>
+    </Portal>
+  );
 
   return (
     <ImageBackground
       source={CommonImages.background}
       style={styles.background}
     >
+      <StatusBar translucent backgroundColor="transparent" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
         <Surface style={styles.surface}>
           <View style={styles.logoContainer}>
-            <Icon name="home-heart" size={80} color={theme.colors.primary} />
-            <Text style={styles.title}>家务自动分配</Text>
+            <Icon name="home-heart" size={100} color={theme.colors.primary} />
+            <Text style={styles.title}>勤云小筑</Text>
           </View>
 
-          <View style={styles.formContainer}>
-            <View>
-              <TextInput
-                label="邮箱"
-                value={email}
-                onChangeText={handleEmailChange}
-                onFocus={handleEmailFocus}
-                mode="outlined"
-                style={styles.input}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                error={emailTouched && !!emailError}
-              />
-              {emailTouched && !!emailError && (
-                <HelperText type="error">{emailError}</HelperText>
-              )}
-            </View>
-
-            <View>
-              <TextInput
-                label="密码"
-                value={password}
-                onChangeText={handlePasswordChange}
-                onFocus={handlePasswordFocus}
-                mode="outlined"
-                style={styles.input}
-                secureTextEntry={secureTextEntry}
-                error={passwordTouched && !!passwordError}
-                right={
-                  <TextInput.Icon
-                    icon={secureTextEntry ? 'eye-off' : 'eye'}
-                    onPress={() => setSecureTextEntry(!secureTextEntry)}
-                  />
-                }
-              />
-              {passwordTouched && !!passwordError && (
-                <HelperText type="error">{passwordError}</HelperText>
-              )}
-            </View>
-
+          <View style={styles.buttonsContainer}>
             <Button
               mode="contained"
-              onPress={handleLogin}
-              style={styles.button}
-              disabled={!isFormValid}
+              onPress={showLoginModal}
+              style={styles.mainButton}
+              contentStyle={styles.buttonContent}
+              labelStyle={styles.buttonLabel}
             >
               登录
             </Button>
-
+            
             <Button
-              mode="text"
-              onPress={() => navigation.navigate('PrivateInformation')}
-              style={styles.registerButton}
+              mode="contained"
+              onPress={handleStartRegister}
+              style={[styles.mainButton, { backgroundColor: theme.colors.accent }]}
+              contentStyle={styles.buttonContent}
+              labelStyle={styles.buttonLabel}
             >
-              还没有账号？立即注册
+              注册
+            </Button>
+            
+            <Button
+              mode="outlined"
+              onPress={handleGuest}
+              style={styles.mainButton}
+              contentStyle={styles.buttonContent}
+              labelStyle={styles.buttonLabel}
+            >
+              游客访问
             </Button>
           </View>
+
+          <View style={styles.thirdPartyLoginHome}>
+            {renderThirdPartyLogin()}
+          </View>
         </Surface>
+        
+        {renderLoginForm()}
       </KeyboardAvoidingView>
     </ImageBackground>
   );
@@ -185,33 +283,93 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
+    paddingTop: 40,
   },
   surface: {
-    padding: 20,
-    borderRadius: 10,
-    elevation: 4,
+    padding: 30,
+    borderRadius: 15,
+    elevation: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 40,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginTop: 10,
+    marginTop: 15,
+    color: '#333',
   },
-  formContainer: {
-    gap: 15,
+  buttonsContainer: {
+    gap: 20,
+  },
+  mainButton: {
+    borderRadius: 10,
+    elevation: 3,
+  },
+  buttonContent: {
+    height: 55,
+  },
+  buttonLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   input: {
     backgroundColor: 'transparent',
+    marginBottom: 10,
   },
   button: {
-    marginTop: 10,
+    marginTop: 15,
     paddingVertical: 8,
+    borderRadius: 10,
   },
-  registerButton: {
+  thirdPartyContainer: {
+    alignItems: 'center',
+  },
+  thirdPartyLoginHome: {
+    marginTop: 30,
+  },
+  dividerText: {
+    marginVertical: 10,
+    color: '#666',
+    fontSize: 14,
+  },
+  socialButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
     marginTop: 10,
+  },
+  socialButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 15,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  modalContainer: {
+    padding: 20,
+  },
+  modalSurface: {
+    padding: 20,
+    borderRadius: 15,
+    elevation: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
   },
 });
 

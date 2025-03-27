@@ -9,6 +9,7 @@ import { AICompanionNavigationEvents } from '../components/VirtualAICompanion';
 
 // 导入所有页面
 import LogIn from '../Log_in';
+import Register from '../Register';
 import PrivateInformation from '../Private_information';
 import AbilityChoice from '../Ability_choice';
 import Home from '../Index';
@@ -172,6 +173,11 @@ const AppNavigator = () => {
         <Stack.Screen 
           name="LogIn" 
           component={LogIn} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Register" 
+          component={Register}
           options={{ headerShown: false }}
         />
         <Stack.Screen 
