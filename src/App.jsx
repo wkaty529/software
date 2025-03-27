@@ -19,9 +19,9 @@ const App = () => {
   return (
     <StoreProvider store={store}>
       <PaperProvider theme={theme}>
-        <AppNavigator>
-          <VirtualAICompanionProvider />
-        </AppNavigator>
+        <VirtualAICompanionProvider>
+          <AppNavigator />
+        </VirtualAICompanionProvider>
       </PaperProvider>
     </StoreProvider>
   );

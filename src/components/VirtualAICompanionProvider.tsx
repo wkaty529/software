@@ -1,4 +1,4 @@
-import React, { ReactNode, createContext, useState, useContext } from 'react';
+import React, { ReactNode, createContext, useState, useContext, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import VirtualAICompanion from './VirtualAICompanion';
 
@@ -8,6 +8,7 @@ interface VirtualAICompanionContextType {
   showCompanion: () => void;
   hideCompanion: () => void;
   toggleCompanion: () => void;
+  setScreenName: (screenName: string) => void;
 }
 
 const defaultContextValue: VirtualAICompanionContextType = {
@@ -15,6 +16,7 @@ const defaultContextValue: VirtualAICompanionContextType = {
   showCompanion: () => {},
   hideCompanion: () => {},
   toggleCompanion: () => {},
+  setScreenName: () => {},
 };
 
 export const VirtualAICompanionContext = createContext<VirtualAICompanionContextType>(defaultContextValue);
@@ -27,17 +29,25 @@ interface VirtualAICompanionProviderProps {
   initialVisible?: boolean;
 }
 
+// 需要排除的屏幕（不显示AI助手的屏幕）
+const EXCLUDED_SCREENS = ['LogIn', 'AbilityChoice', 'PrivateInformation'];
+
 // 虚拟AI伙伴提供者组件
 const VirtualAICompanionProvider: React.FC<VirtualAICompanionProviderProps> = ({
   children,
   initialVisible = true,
 }) => {
   const [isVisible, setIsVisible] = useState(initialVisible);
+  const [currentScreen, setCurrentScreen] = useState<string>('');
+
+  // 检查当前屏幕是否应该显示AI助手
+  const shouldShowCompanion = !EXCLUDED_SCREENS.includes(currentScreen);
 
   // 控制虚拟AI伙伴显示/隐藏的函数
   const showCompanion = () => setIsVisible(true);
   const hideCompanion = () => setIsVisible(false);
   const toggleCompanion = () => setIsVisible(prev => !prev);
+  const setScreenName = (screenName: string) => setCurrentScreen(screenName);
 
   // 构建上下文值
   const contextValue = {
@@ -45,12 +55,13 @@ const VirtualAICompanionProvider: React.FC<VirtualAICompanionProviderProps> = ({
     showCompanion,
     hideCompanion,
     toggleCompanion,
+    setScreenName,
   };
 
   return (
     <VirtualAICompanionContext.Provider value={contextValue}>
       {children}
-      {isVisible && <VirtualAICompanion />}
+      {isVisible && shouldShowCompanion && <VirtualAICompanion />}
     </VirtualAICompanionContext.Provider>
   );
 };

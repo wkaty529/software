@@ -7,7 +7,6 @@ import {
   Platform,
   PermissionsAndroid,
 } from 'react-native';
-import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -17,11 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
 import Tts from 'react-native-tts';
-
-// 定义导航参数类型
-type RootStackParamList = {
-  AIAssistant: { speechText?: string };
-};
+import { useVirtualAICompanion } from './VirtualAICompanionProvider';
 
 // 定义虚拟AI伙伴的属性接口
 interface VirtualAICompanionProps {
@@ -29,13 +24,27 @@ interface VirtualAICompanionProps {
   position?: 'left' | 'right';
 }
 
+// 创建一个事件发布订阅机制
+const navigationEvents = {
+  listeners: new Set<(screenName: string, params?: any) => void>(),
+  
+  addListener(callback: (screenName: string, params?: any) => void) {
+    this.listeners.add(callback);
+    return () => this.listeners.delete(callback);
+  },
+  
+  navigate(screenName: string, params?: any) {
+    this.listeners.forEach(listener => listener(screenName, params));
+  }
+};
+
+// 导出导航事件，供外部组件使用
+export const AICompanionNavigationEvents = navigationEvents;
+
 const VirtualAICompanion: React.FC<VirtualAICompanionProps> = ({
   size = 80,
   position = 'right',
 }) => {
-  // 获取导航对象
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  
   // 状态管理
   const [isVisible, setIsVisible] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -131,8 +140,8 @@ const VirtualAICompanion: React.FC<VirtualAICompanionProps> = ({
       scale.value = withSpring(1);
     });
     
-    // 导航到AI助手页面，使用正确的类型
-    navigation.navigate('AIAssistant', { speechText });
+    // 使用事件系统触发导航事件
+    navigationEvents.navigate('AIAssistant', { speechText });
     
     // 重置语音文本
     setSpeechText('');

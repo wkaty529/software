@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTheme } from 'react-native-paper';
 import CustomIcon from '../components/CustomIcon';
+import { useVirtualAICompanion } from '../components/VirtualAICompanionProvider';
+import { AICompanionNavigationEvents } from '../components/VirtualAICompanion';
 
 // 导入所有页面
 import LogIn from '../Log_in';
@@ -32,6 +34,21 @@ const Tab = createBottomTabNavigator();
 
 const MainTabs = () => {
   const theme = useTheme();
+  const { setScreenName } = useVirtualAICompanion();
+
+  // 监听标签切换
+  const handleTabChange = (e) => {
+    try {
+      const index = e.data.state.index;
+      const routes = ['Home', 'Community', 'Shopping', 'PersonCenter'];
+      if (index >= 0 && index < routes.length) {
+        console.log(`切换到标签页: ${routes[index]}`);
+        setScreenName(routes[index]);
+      }
+    } catch (error) {
+      console.error('处理标签切换错误:', error);
+    }
+  };
 
   return (
     <Tab.Navigator
@@ -42,6 +59,9 @@ const MainTabs = () => {
           paddingBottom: 5,
           paddingTop: 5,
         },
+      }}
+      screenListeners={{
+        state: handleTabChange
       }}
     >
       <Tab.Screen
@@ -88,10 +108,55 @@ const MainTabs = () => {
   );
 };
 
-const AppNavigator = ({ children }) => {
+const AppNavigator = () => {
+  const { setScreenName } = useVirtualAICompanion();
+  const navigationRef = useRef(null);
+
+  // 设置导航事件监听
+  useEffect(() => {
+    // 监听AI助手发出的导航事件
+    const unsubscribe = AICompanionNavigationEvents.addListener((screenName, params) => {
+      if (navigationRef.current && screenName) {
+        console.log(`AI助手请求导航到: ${screenName}`, params);
+        navigationRef.current.navigate(screenName, params);
+      }
+    });
+    
+    return unsubscribe;
+  }, []);
+
+  // 监听导航状态变化
+  const handleNavigationStateChange = (state) => {
+    try {
+      if (state?.routes?.length > 0) {
+        const currentRoute = state.routes[state.index];
+        const currentRouteName = currentRoute.name;
+        
+        // 如果是MainTabs，检查当前激活的标签页
+        if (currentRouteName === 'MainTabs' && currentRoute.state?.routes?.length > 0) {
+          const tabIndex = currentRoute.state.index || 0;
+          const tabRoutes = ['Home', 'Community', 'Shopping', 'PersonCenter'];
+          if (tabIndex >= 0 && tabIndex < tabRoutes.length) {
+            console.log(`设置屏幕名称: ${tabRoutes[tabIndex]} (从MainTabs)`);
+            setScreenName(tabRoutes[tabIndex]);
+            return;
+          }
+        }
+        
+        // 不是MainTabs或无法获取标签信息，使用当前路由名称
+        console.log(`设置屏幕名称: ${currentRouteName}`);
+        setScreenName(currentRouteName);
+      }
+    } catch (error) {
+      console.error('处理导航状态变化错误:', error);
+    }
+  };
+
   return (
-    <NavigationContainer>
-      {children}
+    <NavigationContainer 
+      ref={navigationRef}
+      onStateChange={handleNavigationStateChange}
+    >
       <Stack.Navigator 
         initialRouteName="LogIn"
         screenOptions={{

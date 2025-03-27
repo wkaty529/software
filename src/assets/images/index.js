@@ -17,7 +17,7 @@ export const CommonImages = {
   // Logo 和图标
   logo: require('../common/logo.png'),
   placeholder: require('../common/placeholder.jpg'),
-  avatar: require('../common/default_avatar.jpg'),
+  avatar: require('../common/default_avatar.png'),
   // 背景图片
   headerBg: require('../common/header_bg.jpg'),
   emptyBg: require('../common/empty_bg.png'),
