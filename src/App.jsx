@@ -3,6 +3,7 @@ import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { Provider as StoreProvider } from 'react-redux';
 import { store } from './store';
 import AppNavigator from './navigation/AppNavigator';
+import VirtualAICompanionProvider from './components/VirtualAICompanionProvider';
 
 // 定义应用的默认主题
 const theme = {
@@ -18,7 +19,9 @@ const App = () => {
   return (
     <StoreProvider store={store}>
       <PaperProvider theme={theme}>
-        <AppNavigator />
+        <AppNavigator>
+          <VirtualAICompanionProvider />
+        </AppNavigator>
       </PaperProvider>
     </StoreProvider>
   );

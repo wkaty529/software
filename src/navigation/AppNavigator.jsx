@@ -88,9 +88,10 @@ const MainTabs = () => {
   );
 };
 
-const AppNavigator = () => {
+const AppNavigator = ({ children }) => {
   return (
     <NavigationContainer>
+      {children}
       <Stack.Navigator 
         initialRouteName="LogIn"
         screenOptions={{
@@ -185,6 +186,14 @@ const AppNavigator = () => {
           component={SpecialScenarios}
           options={{
             title: '特殊情景设置',
+            headerBackTitle: '返回',
+          }}
+        />
+        <Stack.Screen
+          name="AIAssistant"
+          component={AIAssistant}
+          options={{
+            title: 'AI 助手',
             headerBackTitle: '返回',
           }}
         />
