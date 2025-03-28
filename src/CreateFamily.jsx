@@ -47,11 +47,17 @@ const CreateFamily = ({ navigation }) => {
       style={styles.container}
     >
       <View style={styles.header}>
-        <IconButton
-          icon="arrow-left"
-          size={24}
+        <TouchableOpacity 
+          style={styles.backButtonContainer}
           onPress={handleGoBack}
-        />
+          activeOpacity={0.7}
+        >
+          <IconButton
+            icon="arrow-left"
+            size={24}
+            onPress={undefined}
+          />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>创建家庭</Text>
       </View>
 
@@ -152,6 +158,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  backButtonContainer: {
+    padding: 8,
   },
 });
 

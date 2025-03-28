@@ -3,6 +3,7 @@ import {
   View,
   StyleSheet,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import {
   Text,
@@ -16,6 +17,8 @@ import {
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CommonImages } from './assets/images';
+import LinearGradient from 'react-native-linear-gradient';
+import { themeGradients } from './styles/theme';
 
 const TaskDetail = ({ route, navigation }) => {
   // 添加默认值，防止 route.params 为 undefined
@@ -35,6 +38,11 @@ const TaskDetail = ({ route, navigation }) => {
     },
   ]);
   const theme = useTheme();
+
+  // 处理返回
+  const handleGoBack = () => {
+    navigation.navigate('MainTabs');
+  };
 
   // 模拟任务数据
   const task = {
@@ -107,99 +115,120 @@ const TaskDetail = ({ route, navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Surface style={styles.card}>
-        <View style={styles.header}>
-          <Text style={styles.title}>{task.title}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(taskStatus) }]}>
-            <Text style={styles.statusText}>
-              {taskStatus === 'completed' ? '已完成' : 
-               taskStatus === 'in_progress' ? '进行中' : '待处理'}
+    <LinearGradient
+      colors={['#E6E6FA', '#D8BFD8']}
+      style={styles.container}
+    >
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButtonContainer}
+          onPress={handleGoBack}
+          activeOpacity={0.7}
+        >
+          <IconButton
+            icon="arrow-left"
+            size={24}
+            color="#6C5CE7"
+            onPress={undefined}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>任务详情</Text>
+      </View>
+      
+      <ScrollView>
+        <Surface style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.title}>{task.title}</Text>
+            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(taskStatus) }]}>
+              <Text style={styles.statusText}>
+                {taskStatus === 'completed' ? '已完成' : 
+                 taskStatus === 'in_progress' ? '进行中' : '待处理'}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.priorityContainer}>
+            <Icon name="flag" size={16} color={getPriorityColor(task.priority)} />
+            <Text style={[styles.priorityText, { color: getPriorityColor(task.priority) }]}>
+              {task.priority === 'high' ? '高优先级' : 
+               task.priority === 'medium' ? '中优先级' : '低优先级'}
             </Text>
           </View>
-        </View>
 
-        <View style={styles.priorityContainer}>
-          <Icon name="flag" size={16} color={getPriorityColor(task.priority)} />
-          <Text style={[styles.priorityText, { color: getPriorityColor(task.priority) }]}>
-            {task.priority === 'high' ? '高优先级' : 
-             task.priority === 'medium' ? '中优先级' : '低优先级'}
-          </Text>
-        </View>
+          <Text style={styles.description}>{task.description}</Text>
 
-        <Text style={styles.description}>{task.description}</Text>
-
-        <View style={styles.infoContainer}>
-          <View style={styles.infoItem}>
-            <Icon name="account" size={20} color="#666" />
-            <Text style={styles.infoText}>负责人：{task.assignee.name}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Icon name="clock-outline" size={20} color="#666" />
-            <Text style={styles.infoText}>截止时间：{task.deadline}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Icon name="star" size={20} color="#FFC107" />
-            <Text style={styles.infoText}>积分：{task.points}</Text>
-          </View>
-        </View>
-      </Surface>
-
-      <Surface style={styles.card}>
-        <Text style={styles.sectionTitle}>评论区</Text>
-        {comments.map(comment => (
-          <View key={comment.id} style={styles.commentItem}>
-            <View style={styles.commentHeader}>
-              <View style={styles.commentUser}>
-                <Avatar.Image
-                  size={32}
-                  source={comment.user.avatar || CommonImages.avatar}
-                />
-                <Text style={styles.commentUserName}>{comment.user.name}</Text>
-              </View>
-              <Text style={styles.commentTime}>{comment.timestamp}</Text>
+          <View style={styles.infoContainer}>
+            <View style={styles.infoItem}>
+              <Icon name="account" size={20} color="#666" />
+              <Text style={styles.infoText}>负责人：{task.assignee.name}</Text>
             </View>
-            <Text style={styles.commentContent}>{comment.content}</Text>
+            <View style={styles.infoItem}>
+              <Icon name="clock-outline" size={20} color="#666" />
+              <Text style={styles.infoText}>截止时间：{task.deadline}</Text>
+            </View>
+            <View style={styles.infoItem}>
+              <Icon name="star" size={20} color="#FFC107" />
+              <Text style={styles.infoText}>积分：{task.points}</Text>
+            </View>
           </View>
-        ))}
-        <View style={styles.commentInput}>
-          <TextInput
-            placeholder="添加评论..."
-            value={comment}
-            onChangeText={setComment}
-            mode="outlined"
-            style={styles.input}
-          />
-          <IconButton
-            icon="send"
-            size={24}
-            onPress={handleComment}
-            disabled={!comment.trim()}
-          />
-        </View>
-      </Surface>
+        </Surface>
 
-      <View style={styles.buttonContainer}>
-        {taskStatus === 'pending' && (
-          <Button
-            mode="contained"
-            onPress={() => handleStatusChange('in_progress')}
-            style={styles.button}
-          >
-            开始任务
-          </Button>
-        )}
-        {taskStatus === 'in_progress' && (
-          <Button
-            mode="contained"
-            onPress={() => handleStatusChange('completed')}
-            style={styles.button}
-          >
-            完成任务
-          </Button>
-        )}
-      </View>
-    </ScrollView>
+        <Surface style={styles.card}>
+          <Text style={styles.sectionTitle}>评论区</Text>
+          {comments.map(comment => (
+            <View key={comment.id} style={styles.commentItem}>
+              <View style={styles.commentHeader}>
+                <View style={styles.commentUser}>
+                  <Avatar.Image
+                    size={32}
+                    source={comment.user.avatar || CommonImages.avatar}
+                  />
+                  <Text style={styles.commentUserName}>{comment.user.name}</Text>
+                </View>
+                <Text style={styles.commentTime}>{comment.timestamp}</Text>
+              </View>
+              <Text style={styles.commentContent}>{comment.content}</Text>
+            </View>
+          ))}
+          <View style={styles.commentInput}>
+            <TextInput
+              placeholder="添加评论..."
+              value={comment}
+              onChangeText={setComment}
+              mode="outlined"
+              style={styles.input}
+            />
+            <IconButton
+              icon="send"
+              size={24}
+              onPress={handleComment}
+              disabled={!comment.trim()}
+            />
+          </View>
+        </Surface>
+
+        <View style={styles.buttonContainer}>
+          {taskStatus === 'pending' && (
+            <Button
+              mode="contained"
+              onPress={() => handleStatusChange('in_progress')}
+              style={styles.button}
+            >
+              开始任务
+            </Button>
+          )}
+          {taskStatus === 'in_progress' && (
+            <Button
+              mode="contained"
+              onPress={() => handleStatusChange('completed')}
+              style={styles.button}
+            >
+              完成任务
+            </Button>
+          )}
+        </View>
+      </ScrollView>
+    </LinearGradient>
   );
 };
 
@@ -310,6 +339,19 @@ const styles = StyleSheet.create({
   },
   button: {
     marginBottom: 8,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  backButtonContainer: {
+    padding: 8,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
 });
 

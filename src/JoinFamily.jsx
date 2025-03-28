@@ -77,11 +77,17 @@ const JoinFamily = ({ navigation }) => {
       style={styles.container}
     >
       <View style={styles.header}>
-        <IconButton
-          icon="arrow-left"
-          size={24}
+        <TouchableOpacity 
+          style={styles.backButtonContainer}
           onPress={handleGoBack}
-        />
+          activeOpacity={0.7}
+        >
+          <IconButton
+            icon="arrow-left"
+            size={24}
+            onPress={undefined}
+          />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>入驻家庭</Text>
       </View>
 
@@ -173,6 +179,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  backButtonContainer: {
+    padding: 8,
   },
 });
 

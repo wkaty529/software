@@ -51,33 +51,47 @@ const Index = ({ navigation }) => {
         {/* 顶部标题和按钮区 */}
         <View style={styles.header}>
           <View style={styles.rightHeader}>
-            <View style={styles.headerButton}>
+            <TouchableOpacity 
+              style={styles.headerButton}
+              onPress={() => navigation.navigate('TaskDetail')}
+              activeOpacity={0.7}
+            >
               <IconButton
                 icon="broom"
                 size={24}
                 iconColor="#333"
-                onPress={() => navigation.navigate('TaskDetail')}
+                onPress={undefined}
               />
               <Text style={styles.buttonText}>任务</Text>
-            </View>
-            <View style={styles.headerButton}>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.headerButton}
+              onPress={() => navigation.navigate('JoinFamily')}
+              activeOpacity={0.7}
+            >
               <IconButton
                 icon="account-multiple-plus"
                 size={24}
                 iconColor="#333"
-                onPress={() => navigation.navigate('JoinFamily')}
+                onPress={undefined}
               />
               <Text style={styles.buttonText}>入驻家庭</Text>
-            </View>
-            <View style={styles.headerButton}>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.headerButton}
+              onPress={() => navigation.navigate('CreateFamily')}
+              activeOpacity={0.7}
+            >
               <IconButton
                 icon="home-plus"
                 size={24}
                 iconColor="#333"
-                onPress={() => navigation.navigate('CreateFamily')}
+                onPress={undefined}
               />
               <Text style={styles.buttonText}>创建家庭</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 

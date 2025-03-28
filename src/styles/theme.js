@@ -19,6 +19,18 @@ export const appTheme = {
   },
 };
 
+// 应用中使用的渐变色定义
+export const themeGradients = {
+  // 背景渐变色
+  backgroundGradient: ['#E6E6FA', '#D8BFD8'],
+  // 按钮渐变色
+  primaryButtonGradient: ['#4A6FA5', '#6A8CBF'],
+  // 卡片渐变色
+  cardGradient: ['#F8F9FB', '#F0F2F5'],
+  // 头部渐变色
+  headerGradient: ['#4A6FA5', '#3A5F95'],
+};
+
 // 商品类别的图标映射
 export const categoryIcons = {
   '全部': 'view-grid',

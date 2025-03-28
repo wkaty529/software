@@ -298,7 +298,7 @@ const AppNavigator = () => {
             headerBackTitle: '返回',
           }}
         />
-         <Stack.Screen 
+        <Stack.Screen 
           name="JoinFamily" 
           component={JoinFamily}
           options={{ 
