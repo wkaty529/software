@@ -4,6 +4,8 @@ import { Provider as StoreProvider } from 'react-redux';
 import { store } from './store';
 import AppNavigator from './navigation/AppNavigator';
 import VirtualAICompanionProvider from './components/VirtualAICompanionProvider';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StyleSheet } from 'react-native';
 
 // 定义应用的默认主题
 const theme = {
@@ -17,14 +19,22 @@ const theme = {
 
 const App = () => {
   return (
-    <StoreProvider store={store}>
-      <PaperProvider theme={theme}>
-        <VirtualAICompanionProvider>
-          <AppNavigator />
-        </VirtualAICompanionProvider>
-      </PaperProvider>
-    </StoreProvider>
+    <GestureHandlerRootView style={styles.container}>
+      <StoreProvider store={store}>
+        <PaperProvider theme={theme}>
+          <VirtualAICompanionProvider>
+            <AppNavigator />
+          </VirtualAICompanionProvider>
+        </PaperProvider>
+      </StoreProvider>
+    </GestureHandlerRootView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 export default App; 

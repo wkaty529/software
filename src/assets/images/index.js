@@ -23,6 +23,19 @@ export const CommonImages = {
   emptyBg: require('../common/empty_bg.png'),
   // 登录页背景
   background: require('../common/background.jpg'),
+  avatars: require('../common/avatar.png'),
+  avatarss: require('../common/avatarss.png'),
+  a2:require("../common/a2.png"),
+  a3:require("../common/a3.png"),
+  a4:require("../common/a4.png"),
+  a5:require("../common/a5.png"),
+  a6:require("../common/a6.png"),
+  a7:require("../common/a7.png"),
+  a8:require("../common/a8.png"),
+  a9:require("../common/a9.png"),
+  a10:require("../common/player.png"),
+  a11:require("../common/a11.png"),
+  a12:require("../common/a12.png"),
 };
 
 // 导出所有图片

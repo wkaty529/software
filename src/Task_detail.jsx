@@ -18,7 +18,9 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CommonImages } from './assets/images';
 
 const TaskDetail = ({ route, navigation }) => {
-  const { taskId } = route.params;
+  // 添加默认值，防止 route.params 为 undefined
+  const { taskId = '' } = route?.params || {};
+  
   const [taskStatus, setTaskStatus] = useState('pending'); // pending, in_progress, completed
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([

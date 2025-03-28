@@ -29,6 +29,8 @@ import ExchangeHistory from '../ExchangeHistory';
 import SpecialScenarios from '../SpecialScenarios';
 import TabooSettings from '../TabooSettings';
 import AddCustomTaboo from '../AddCustomTaboo';
+import JoinFamily from '../JoinFamily';
+import CreateFamily from '../CreateFamily';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -60,6 +62,7 @@ const MainTabs = () => {
           paddingBottom: 5,
           paddingTop: 5,
         },
+        headerShown: false,
       }}
       screenListeners={{
         state: handleTabChange
@@ -110,8 +113,9 @@ const MainTabs = () => {
 };
 
 const AppNavigator = () => {
-  const { setScreenName } = useVirtualAICompanion();
+  const { setScreenName, showCompanion } = useVirtualAICompanion();
   const navigationRef = useRef(null);
+  const initialMainTabsLoad = useRef(true);
 
   // 设置导航事件监听
   useEffect(() => {
@@ -140,6 +144,16 @@ const AppNavigator = () => {
           if (tabIndex >= 0 && tabIndex < tabRoutes.length) {
             console.log(`设置屏幕名称: ${tabRoutes[tabIndex]} (从MainTabs)`);
             setScreenName(tabRoutes[tabIndex]);
+            
+            // 只在第一次进入MainTabs时显示AI助手
+            if (initialMainTabsLoad.current) {
+              initialMainTabsLoad.current = false;
+              // 延迟显示AI助手，确保页面已完全加载
+              setTimeout(() => {
+                showCompanion();
+              }, 1000);
+            }
+            
             return;
           }
         }
@@ -282,6 +296,20 @@ const AppNavigator = () => {
           options={{
             title: '添加自定义禁忌',
             headerBackTitle: '返回',
+          }}
+        />
+         <Stack.Screen 
+          name="JoinFamily" 
+          component={JoinFamily}
+          options={{ 
+            headerShown: false,  // 因为JoinFamily组件内已经有自己的header
+          }}
+        />
+        <Stack.Screen 
+          name="CreateFamily" 
+          component={CreateFamily}
+          options={{ 
+            headerShown: false,  // 如果CreateFamily组件也有自己的header
           }}
         />
       </Stack.Navigator>

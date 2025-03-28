@@ -34,7 +34,7 @@ const PersonCenter = ({ navigation }) => {
       id: 'tasks',
       title: '我的任务',
       icon: 'checkbox-marked-circle',
-      onPress: () => navigation.navigate('MainTabs', { screen: 'Home' }),
+      onPress: () => navigation.navigate('TaskDetail'),
     },
     {
       id: 'achievements',

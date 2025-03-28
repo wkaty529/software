@@ -5,453 +5,324 @@ import {
   ScrollView,
   Image,
   ImageBackground,
+  Dimensions,
 } from 'react-native';
 import {
   Text,
   Surface,
   Button,
   Chip,
-  useTheme,
   IconButton,
-  Searchbar,
   Dialog,
   Portal,
   Paragraph,
   ActivityIndicator,
   Snackbar,
-  Avatar,
 } from 'react-native-paper';
+import LinearGradient from 'react-native-linear-gradient';
 import CustomIcon from './components/CustomIcon';
-import { ProductImages, CommonImages } from './assets/images';
+import { CommonImages } from './assets/images';
 
-// 定义主题颜色
+const { width: screenWidth } = Dimensions.get('window');
+
+// 更新主题颜色为紫色系
 const COLORS = {
-  primary: '#4A6FA5',
-  accent: '#FF6B6B',
-  background: '#F8F9FB',
-  surface: '#FFFFFF',
-  text: '#1E2022',
-  subtext: '#6F7E8C',
-  border: '#E1E5EB',
-  success: '#4CAF50',
-  error: '#F44336',
+  primary: '#9B7EDE',      // 主色调：中等紫色
+  accent: '#E6B3FF',       // 强调色：浅紫色
+  background: '#F8F0FF',   // 背景色：极浅紫色
+  surface: '#FFFFFF',      // 表面色：白色
+  text: '#4A4A4A',        // 文字色：深灰色
+  subtext: '#8E8E8E',     // 次要文字：中灰色
+  border: '#E6E0FF',      // 边框色：浅紫色
+  success: '#9B7EDE',     // 成功色：紫色
+  error: '#FF9ECD',       // 错误色：粉紫色
 };
 
 // 商品类别图标
 const CATEGORY_ICONS = {
   '全部': 'view-grid',
-  '清洁用品': 'spray-bottle',
-  '厨房用品': 'silverware-fork-knife',
-  '收纳工具': 'package-variant',
-  '生活用品': 'home-variant',
+  '家务券': 'broom',
+  '娱乐券': 'ticket',
+  '玩具': 'toy-brick',
+  '亲子活动': 'account-group',
   '其他': 'dots-horizontal-circle',
-};
-
-// 模拟用户数据，实际应该从用户状态或API获取
-const mockUserData = {
-  points: 1280,
-  address: '北京市海淀区中关村大街1号',
-  phone: '138****1234',
 };
 
 const categories = [
   '全部',
-  '清洁用品',
-  '厨房用品',
-  '收纳工具',
-  '生活用品',
+  '家务券',
+  '娱乐券',
+  '玩具',
+  '亲子活动',
   '其他',
 ];
 
-// 修改商品数据，使用本地图片
+// 更新积分范围分类
+const pointsRanges = [
+  '100-300小币',
+  '300-800小币',
+  '800-1500小币',
+  '1500以上小币'
+];
+
+// 更新商品数据，按积分从低到高排序
 const mockProducts = [
   {
     id: '1',
-    name: '多功能清洁套装',
-    description: '包含拖把、扫把、抹布等清洁工具，适合各种家居清洁场景',
-    points: 500,
-    image: ProductImages.cleaningKit,
-    category: '清洁用品',
-    stock: 10,
-    sales: 128,
-    rating: 4.8,
-    isNew: true,
+    name: '家务转移券',
+    description: '可以将一次家务任务转移给其他家庭成员完成',
+    points: 200,
+    image: CommonImages.a4,
+    exchangeCount: 3494,
+    category: '100-300小币'
   },
   {
     id: '2',
-    name: '智能收纳盒',
-    description: '可折叠收纳，节省空间，多种颜色可选，适合各种居家场景',
+    name: '家务延时券',
+    description: '可以将一次家务任务延期24小时完成',
     points: 300,
-    image: ProductImages.storageBox,
-    category: '收纳工具',
-    stock: 15,
-    sales: 256,
-    rating: 4.6,
+    image: CommonImages.a2,
+    exchangeCount: 2156,
+    category: '300-800小币'
   },
   {
     id: '3',
-    name: '厨房调味料套装',
-    description: '包含常用调味料，品质保证，安全健康，提升您的烹饪体验',
-    points: 800,
-    image: ProductImages.kitchenSet,
-    category: '厨房用品',
-    stock: 5,
-    sales: 89,
-    rating: 4.9,
-    isNew: true,
+    name: '看电影券',
+    description: '和家人一起观看一场电影',
+    points: 500,
+    image: CommonImages.a5,
+    exchangeCount: 1856,
+    category: '300-800小币'
   },
   {
     id: '4',
-    name: '防滑厨房手套',
-    description: '耐高温防滑设计，保护双手不受伤害，厨房必备用品',
-    points: 150,
-    image: ProductImages.kitchenGloves,
-    category: '厨房用品',
-    stock: 20,
-    sales: 45,
-    rating: 4.7,
+    name: '野餐券',
+    description: '和家人一起享受户外野餐时光',
+    points: 600,
+    image: CommonImages.a6,
+    exchangeCount: 1234,
+    category: '300-800小币'
   },
+  {
+    id: '5',
+    name: '郊游券',
+    description: '和家人一起郊游一天',
+    points: 800,
+    image: CommonImages.a11,
+    exchangeCount: 987,
+    category: '800-1500小币'
+  },
+  {
+    id: '6',
+    name: '露营券',
+    description: '和家人一起体验露营的乐趣',
+    points: 1000,
+    image: CommonImages.a6,
+    exchangeCount: 876,
+    category: '800-1500小币'
+  },
+  {
+    id: '7',
+    name: '爬山券',
+    description: '和家人一起登山远足',
+    points: 1200,
+    image: CommonImages.a12,
+    exchangeCount: 654,
+    category: '800-1500小币'
+  },
+  {
+    id: '8',
+    name: '看海券',
+    description: '和家人一起去海边度假',
+    points: 1500,
+    image: CommonImages.a7,
+    exchangeCount: 432,
+    category: '1500以上小币'
+  },
+  {
+    id: '9',
+    name: '豪华玩具',
+    description: '可以兑换一个心仪的玩具',
+    points: 2000,
+    image: CommonImages.a10,
+    exchangeCount: 321,
+    category: '1500以上小币'
+  }
 ];
 
 const Shopping = ({ navigation }) => {
+  const [selectedRange, setSelectedRange] = useState(pointsRanges[0]);
   const [selectedCategory, setSelectedCategory] = useState('全部');
-  const [searchQuery, setSearchQuery] = useState('');
   const [dialogVisible, setDialogVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [exchangeResult, setExchangeResult] = useState({ visible: false, success: false, message: '' });
-  const [userPoints, setUserPoints] = useState(mockUserData.points);
-  const [products, setProducts] = useState(mockProducts);
+  const scrollViewRef = React.useRef(null);
 
-  const theme = useTheme();
-
-  const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === '全部' || product.category === selectedCategory;
-    const matchesSearch = !searchQuery || 
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const handleExchange = (productId) => {
-    const product = products.find(p => p.id === productId);
-    if (product) {
-      setSelectedProduct(product);
-      setDialogVisible(true);
-    }
-  };
-
-  const confirmExchange = useCallback(() => {
-    if (!selectedProduct) return;
+  const handleRangeSelect = (range) => {
+    setSelectedRange(range);
     
-    // 检查积分是否足够
-    if (userPoints < selectedProduct.points) {
-      setExchangeResult({
-        visible: true,
-        success: false,
-        message: '积分不足，无法兑换商品'
-      });
-      setDialogVisible(false);
-      return;
-    }
-
-    // 检查库存是否足够
-    if (selectedProduct.stock <= 0) {
-      setExchangeResult({
-        visible: true,
-        success: false,
-        message: '商品已售罄，请选择其他商品'
-      });
-      setDialogVisible(false);
-      return;
-    }
-
-    // 模拟兑换请求
-    setLoading(true);
-    setTimeout(() => {
-      // 更新用户积分
-      setUserPoints(prev => prev - selectedProduct.points);
-      
-      // 更新商品库存和销量
-      setProducts(prevProducts => 
-        prevProducts.map(product => 
-          product.id === selectedProduct.id
-            ? { 
-                ...product, 
-                stock: product.stock - 1,
-                sales: product.sales + 1
-              }
-            : product
-        )
-      );
-
-      // 显示成功消息
-      setExchangeResult({
-        visible: true,
-        success: true,
-        message: `成功兑换"${selectedProduct.name}"，消耗${selectedProduct.points}积分`
-      });
-
-      // 关闭加载和弹窗
-      setLoading(false);
-      setDialogVisible(false);
-    }, 1500); // 模拟网络延迟
-  }, [selectedProduct, userPoints]);
-
-  const dismissSnackbar = () => {
-    setExchangeResult({...exchangeResult, visible: false});
-  };
-
-  const goToExchangeHistory = () => {
-    navigation.navigate('ExchangeHistory');
-  };
-
-  // 渲染星级评分
-  const renderRating = (rating) => {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating - fullStars >= 0.5;
+    // 计算banner和其他内容的总高度
+    const headerHeight = 160 + 16 * 2; // banner高度 + margin
+    const pointsSectionHeight = 50; // 积分显示区域高度
+    const rangesHeight = 50; // 范围选择区域高度
+    const baseOffset = headerHeight + pointsSectionHeight + rangesHeight;
     
-    return (
-      <View style={styles.ratingContainer}>
-        {[...Array(5)].map((_, i) => {
-          if (i < fullStars) {
-            return <CustomIcon key={i} name="star" size={14} color="#FFD700" />;
-          } else if (i === fullStars && halfStar) {
-            return <CustomIcon key={i} name="star-half-full" size={14} color="#FFD700" />;
-          } else {
-            return <CustomIcon key={i} name="star-outline" size={14} color="#FFD700" />;
-          }
-        })}
-        <Text style={styles.ratingText}>{rating.toFixed(1)}</Text>
-      </View>
-    );
+    // 找到该范围内的第一个商品
+    const firstProductIndex = mockProducts.findIndex(p => p.category === range);
+    
+    if (firstProductIndex !== -1) {
+      // 计算需要滚动的位置
+      const itemHeight = 200; // 每个商品卡片的实际高度
+      const itemsPerRow = 2; // 每行显示2个商品
+      const rowIndex = Math.floor(firstProductIndex / itemsPerRow);
+      const scrollPosition = baseOffset + (rowIndex * itemHeight);
+
+      // 使用setTimeout确保在状态更新后执行滚动
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({
+          y: scrollPosition,
+          animated: true
+        });
+      }, 100);
+    }
+  };
+
+  const handleExchange = (product) => {
+    setSelectedProduct(product);
+    setDialogVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      <ImageBackground 
-        source={CommonImages.headerBg} 
-        style={styles.headerBg}
-        resizeMode="cover"
-      >
-        <Surface style={styles.header}>
-          <View style={styles.headerTop}>
-            <View style={styles.pointsContainer}>
-              <CustomIcon name="coin" size={24} color={COLORS.accent} style={styles.pointsIcon} />
-              <View>
-                <Text style={styles.pointsLabel}>我的积分</Text>
-                <Text style={styles.pointsValue}>{userPoints}</Text>
-              </View>
-            </View>
-            <Button 
-              mode="outlined" 
-              onPress={goToExchangeHistory}
-              style={styles.historyButton}
-              icon="history"
-              color={COLORS.primary}
-            >
-              兑换记录
-            </Button>
-          </View>
-          <Searchbar
-            placeholder="搜索商品"
-            onChangeText={setSearchQuery}
-            value={searchQuery}
-            style={styles.searchBar}
-            iconColor={COLORS.primary}
-            clearIcon="close-circle"
-          />
-        </Surface>
-      </ImageBackground>
-
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoriesContainer}
-        contentContainerStyle={styles.categoriesContentContainer}
-      >
-        {categories.map(category => (
-          <Chip
-            key={category}
-            selected={selectedCategory === category}
-            onPress={() => setSelectedCategory(category)}
-            style={[
-              styles.categoryChip, 
-              selectedCategory === category && styles.categoryChipSelected
-            ]}
-            textStyle={[
-              styles.categoryChipText,
-              selectedCategory === category && styles.categoryChipTextSelected
-            ]}
-            icon={() => (
-              <CustomIcon 
-                name={CATEGORY_ICONS[category]} 
-                size={18} 
-                color={selectedCategory === category ? '#fff' : COLORS.primary} 
-              />
-            )}
-            selectedColor="#fff"
+      {/* 固定在顶部的部分 */}
+      <View style={styles.fixedHeader}>
+        {/* Banner */}
+        <View style={styles.banner}>
+          <LinearGradient
+            colors={['#9B7EDE', '#E6B3FF']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.bannerGradient}
           >
-            {category}
-          </Chip>
-        ))}
-      </ScrollView>
+            <Text style={styles.bannerTitle}>欢迎来到积分商城</Text>
+            <Text style={styles.bannerSubtitle}>用积分换取心仪的奖励吧！</Text>
+          </LinearGradient>
+        </View>
 
-      {/* 滚动指示器 */}
-      <View style={styles.scrollIndicator}>
-        <View style={styles.scrollIndicatorDot} />
-        <View style={[styles.scrollIndicatorDot, styles.scrollIndicatorDotActive]} />
-        <View style={styles.scrollIndicatorDot} />
+        {/* 积分显示和赚取按钮 */}
+        <View style={styles.pointsSection}>
+          <View style={styles.pointsDisplay}>
+            <CustomIcon name="coin" size={24} color={COLORS.primary} />
+            <Text style={styles.pointsText}>2580</Text>
+          </View>
+          <Button
+            mode="contained"
+            style={styles.earnButton}
+            onPress={() => navigation.navigate('TaskDetail')}
+          >
+            赚取积分
+          </Button>
+        </View>
+
+        {/* 积分范围选择 */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.rangesContainer}
+        >
+          {pointsRanges.map((range) => (
+            <Chip
+              key={range}
+              selected={selectedRange === range}
+              onPress={() => handleRangeSelect(range)}
+              style={[
+                styles.rangeChip,
+                selectedRange === range && styles.selectedRangeChip,
+              ]}
+              textStyle={{
+                color: selectedRange === range ? '#fff' : COLORS.primary,
+              }}
+            >
+              {range}
+            </Chip>
+          ))}
+        </ScrollView>
       </View>
 
-      <ScrollView style={styles.productsContainer}>
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map(product => (
-            <Surface key={product.id} style={styles.productCard}>
-              <View style={styles.productImageContainer}>
-                <Image
-                  source={product.image}
-                  style={styles.productImage}
-                  resizeMode="cover"
-                />
-                {product.isNew && (
-                  <View style={styles.newBadge}>
-                    <Text style={styles.newBadgeText}>新品</Text>
-                  </View>
-                )}
-              </View>
+      {/* 可滚动的商品列表 */}
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.productsGrid}>
+          {mockProducts.map((product) => (
+            <View 
+              key={product.id} 
+              style={[
+                styles.productCard,
+                { height: 250 }
+              ]}
+            >
+              <Image
+                source={product.image}
+                style={styles.productImage}
+                resizeMode="cover"
+              />
               <View style={styles.productInfo}>
-                <Text style={styles.productName} numberOfLines={2}>
-                  {product.name}
-                </Text>
-                
-                {renderRating(product.rating)}
-                
+                <Text style={styles.productName}>{product.name}</Text>
                 <Text style={styles.productDescription} numberOfLines={2}>
                   {product.description}
                 </Text>
-                
-                <View style={styles.productMeta}>
-                  <View style={styles.pointsAndStock}>
-                    <View style={styles.productPointsContainer}>
-                      <CustomIcon name="coin" size={16} color={COLORS.accent} />
-                      <Text style={styles.productPoints}>{product.points} 积分</Text>
-                    </View>
-                    <View style={styles.statsContainer}>
-                      <Text style={styles.productStock}>库存: {product.stock}</Text>
-                      <Text style={styles.productSales}>已兑: {product.sales}</Text>
-                    </View>
+                <Text style={styles.exchangeCount}>
+                  已兑换 {product.exchangeCount} 次
+                </Text>
+                <View style={styles.productBottom}>
+                  <View style={styles.pointsContainer}>
+                    <CustomIcon name="coin" size={16} color={COLORS.primary} />
+                    <Text style={styles.productPoints}>{product.points}</Text>
                   </View>
                   <Button
                     mode="contained"
-                    onPress={() => handleExchange(product.id)}
-                    style={[
-                      styles.exchangeButton,
-                      (product.stock === 0 || userPoints < product.points) && styles.disabledButton
-                    ]}
-                    icon="cart"
-                    disabled={product.stock === 0 || userPoints < product.points}
-                    color={COLORS.primary}
+                    style={styles.exchangeButton}
+                    labelStyle={styles.exchangeButtonLabel}
+                    contentStyle={{ height: 32 }}
+                    onPress={() => handleExchange(product)}
                   >
-                    {product.stock === 0 ? '已售罄' : 
-                     userPoints < product.points ? '积分不足' : '立即兑换'}
+                    兑换
                   </Button>
                 </View>
               </View>
-            </Surface>
-          ))
-        ) : (
-          <View style={styles.emptyContainer}>
-            <Image 
-              source={CommonImages.emptyBg}
-              style={styles.emptyImage}
-              resizeMode="contain"
-            />
-            <Text style={styles.emptyText}>暂无符合条件的商品</Text>
-          </View>
-        )}
+            </View>
+          ))}
+        </View>
       </ScrollView>
 
-      {/* 漂浮按钮 */}
-      <View style={styles.fabContainer}>
-        <IconButton
-          icon="cart-plus"
-          color="#fff"
-          size={24}
-          style={styles.fab}
-          onPress={() => {}}
-        />
-      </View>
-
-      {/* 兑换确认弹窗 */}
+      {/* 兑换确认对话框 */}
       <Portal>
-        <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
-          <Dialog.Title style={styles.dialogTitle}>确认兑换</Dialog.Title>
+        <Dialog
+          visible={dialogVisible}
+          onDismiss={() => setDialogVisible(false)}
+        >
+          <Dialog.Title>确认兑换</Dialog.Title>
           <Dialog.Content>
-            {loading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={COLORS.primary} />
-                <Text style={styles.loadingText}>处理中...</Text>
-              </View>
-            ) : (
-              <>
-                {selectedProduct && (
-                  <>
-                    <Paragraph style={styles.dialogParagraph}>您确定要兑换以下商品吗？</Paragraph>
-                    <View style={styles.dialogProductInfo}>
-                      <Image 
-                        source={selectedProduct.image}
-                        style={styles.dialogProductImage}
-                      />
-                      <View style={styles.dialogProductDetails}>
-                        <Text style={styles.dialogProductName}>{selectedProduct.name}</Text>
-                        <View style={styles.dialogProductPoints}>
-                          <CustomIcon name="coin" size={16} color={COLORS.accent} />
-                          <Text style={styles.dialogPointsText}>{selectedProduct.points} 积分</Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.dialogAddressContainer}>
-                      <CustomIcon name="map-marker" size={16} color={COLORS.primary} style={styles.dialogIcon} />
-                      <Text style={styles.dialogAddress}>
-                        收货地址：{mockUserData.address}
-                      </Text>
-                    </View>
-                    <View style={styles.dialogAddressContainer}>
-                      <CustomIcon name="phone" size={16} color={COLORS.primary} style={styles.dialogIcon} />
-                      <Text style={styles.dialogAddress}>
-                        联系电话：{mockUserData.phone}
-                      </Text>
-                    </View>
-                    <View style={styles.dialogBalanceContainer}>
-                      <Text style={styles.dialogBalanceLabel}>兑换后积分余额：</Text>
-                      <Text style={styles.dialogBalance}>{userPoints - selectedProduct.points}</Text>
-                    </View>
-                  </>
-                )}
-              </>
-            )}
+            <Paragraph>
+              确定要使用 {selectedProduct?.points} 积分兑换 {selectedProduct?.name} 吗？
+            </Paragraph>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={() => setDialogVisible(false)} disabled={loading} color={COLORS.subtext}>取消</Button>
-            <Button onPress={confirmExchange} disabled={loading} color={COLORS.primary}>确认兑换</Button>
+            <Button onPress={() => setDialogVisible(false)}>取消</Button>
+            <Button
+              mode="contained"
+              onPress={() => {
+                // 处理兑换逻辑
+                setDialogVisible(false);
+              }}
+            >
+              确认兑换
+            </Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
-
-      {/* 兑换结果提示 */}
-      <Snackbar
-        visible={exchangeResult.visible}
-        onDismiss={dismissSnackbar}
-        duration={3000}
-        action={{
-          label: '好的',
-          onPress: dismissSnackbar,
-        }}
-        style={exchangeResult.success ? styles.successSnackbar : styles.errorSnackbar}
-      >
-        {exchangeResult.message}
-      </Snackbar>
     </View>
   );
 };
@@ -461,302 +332,142 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  headerBg: {
-    width: '100%',
+  fixedHeader: {
+    backgroundColor: COLORS.background,
+    zIndex: 1,
   },
-  header: {
-    padding: 16,
-    elevation: 4,
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+  content: {
+    flex: 1,
   },
-  headerTop: {
+  banner: {
+    height: 160,
+    margin: 16,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  bannerGradient: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+  },
+  bannerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 8,
+  },
+  bannerSubtitle: {
+    fontSize: 16,
+    color: '#fff',
+    opacity: 0.8,
+  },
+  pointsSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 16,
     marginBottom: 16,
+  },
+  pointsDisplay: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pointsText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  earnButton: {
+    borderRadius: 20,
+    backgroundColor: COLORS.primary,
+  },
+  rangesContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  rangeChip: {
+    marginRight: 8,
+    backgroundColor: '#fff',
+    borderColor: COLORS.primary,
+    borderWidth: 1,
+  },
+  selectedRangeChip: {
+    backgroundColor: COLORS.primary,
+  },
+  productsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    padding: 8,
+    paddingBottom: 20,
+  },
+  productCard: {
+    width: '50%',
+    padding: 8,
+    height: 250,
+  },
+  productImage: {
+    width: '100%',
+    height: 120,
+    borderRadius: 8,
+    backgroundColor: '#f0f0f0',
+  },
+  productInfo: {
+    padding: 12,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    marginTop: -20,
+    elevation: 2,
+    borderColor: COLORS.border,
+    borderWidth: 1,
+    height: 130,
+    justifyContent: 'space-between',
+  },
+  productName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  productDescription: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+    height: 32,
+    lineHeight: 16,
+  },
+  exchangeCount: {
+    fontSize: 12,
+    color: '#999',
+    marginBottom: 4,
+  },
+  productBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
   },
   pointsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  pointsIcon: {
-    marginRight: 8,
-  },
-  pointsLabel: {
-    fontSize: 12,
-    color: COLORS.subtext,
-  },
-  pointsValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: COLORS.accent,
-  },
-  historyButton: {
-    borderColor: COLORS.primary,
-    borderRadius: 20,
-  },
-  searchBar: {
-    elevation: 0,
-    backgroundColor: COLORS.background,
-    borderRadius: 8,
-  },
-  categoriesContainer: {
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  categoriesContentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  categoryChip: {
-    marginRight: 12,
-    backgroundColor: '#fff',
-    borderColor: COLORS.border,
-    height: 40,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    minWidth: 90,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    borderWidth: 1,
-  },
-  categoryChipSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  categoryChipText: {
-    fontSize: 14,
-    color: COLORS.primary,
-    marginLeft: 4,
-    marginRight: 4,
-    textAlign: 'center',
-  },
-  categoryChipTextSelected: {
-    color: '#fff',
-    fontWeight: '500',
-  },
-  productsContainer: {
-    padding: 16,
-    paddingBottom: 80, // 为FAB留出空间
-  },
-  productCard: {
-    marginBottom: 16,
-    borderRadius: 12,
-    overflow: 'hidden',
-    elevation: 2,
-  },
-  productImageContainer: {
-    position: 'relative',
-  },
-  productImage: {
-    width: '100%',
-    height: 180,
-    backgroundColor: '#f5f5f5',
-  },
-  newBadge: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: COLORS.accent,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  newBadgeText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  productInfo: {
-    padding: 16,
-  },
-  productName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-    color: COLORS.text,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  ratingText: {
-    marginLeft: 4,
-    fontSize: 12,
-    color: COLORS.subtext,
-  },
-  productDescription: {
-    fontSize: 14,
-    color: COLORS.subtext,
-    marginBottom: 12,
-    lineHeight: 20,
-  },
-  productMeta: {
-    flex: 1,
-  },
-  pointsAndStock: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  productPointsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   productPoints: {
+    marginLeft: 4,
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.accent,
-    marginLeft: 4,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-  },
-  productStock: {
-    fontSize: 12,
-    color: COLORS.subtext,
-    marginRight: 16,
-  },
-  productSales: {
-    fontSize: 12,
-    color: COLORS.subtext,
+    color: COLORS.primary,
   },
   exchangeButton: {
-    borderRadius: 8,
-  },
-  disabledButton: {
-    opacity: 0.7,
-  },
-  fabContainer: {
-    position: 'absolute',
-    right: 16,
-    bottom: 16,
-  },
-  fab: {
+    borderRadius: 16,
+    paddingHorizontal: 12,
     backgroundColor: COLORS.primary,
-    elevation: 4,
-  },
-  emptyContainer: {
-    padding: 40,
-    alignItems: 'center',
+    height: 32,
     justifyContent: 'center',
+    minWidth: 60,
   },
-  emptyImage: {
-    width: 120,
-    height: 120,
-    marginBottom: 16,
-  },
-  emptyText: {
-    marginTop: 16,
-    color: COLORS.subtext,
-    fontSize: 16,
-  },
-  // 对话框样式
-  dialogTitle: {
-    color: COLORS.primary,
-  },
-  dialogParagraph: {
-    marginBottom: 12,
-  },
-  dialogProductInfo: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.background,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  dialogProductImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 6,
-  },
-  dialogProductDetails: {
-    marginLeft: 12,
-    flex: 1,
-    justifyContent: 'center',
-  },
-  dialogProductName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 6,
-    color: COLORS.text,
-  },
-  dialogProductPoints: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  dialogPointsText: {
-    marginLeft: 4,
-    color: COLORS.accent,
-    fontWeight: 'bold',
-  },
-  dialogAddressContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  dialogIcon: {
-    marginTop: 2,
-    marginRight: 8,
-  },
-  dialogAddress: {
-    fontSize: 14,
-    color: COLORS.text,
-    flex: 1,
-  },
-  dialogBalanceContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-  },
-  dialogBalanceLabel: {
-    fontSize: 14,
-    color: COLORS.text,
-  },
-  dialogBalance: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.accent,
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    padding: 20,
-  },
-  loadingText: {
-    marginTop: 12,
-    color: COLORS.subtext,
-  },
-  successSnackbar: {
-    backgroundColor: COLORS.success,
-  },
-  errorSnackbar: {
-    backgroundColor: COLORS.error,
-  },
-  scrollIndicator: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  scrollIndicatorDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.border,
-    marginHorizontal: 3,
-  },
-  scrollIndicatorDotActive: {
-    backgroundColor: COLORS.primary,
-    width: 12,
+  exchangeButtonLabel: {
+    fontSize: 12,
+    marginVertical: 0,
+    marginHorizontal: 0,
   },
 });
 
-export default Shopping; 
+export default Shopping;

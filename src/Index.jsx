@@ -1,268 +1,315 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
   ScrollView,
-  RefreshControl,
+  Dimensions,
+  ImageBackground,
+  TouchableOpacity,
+  Text,
+  Image,
 } from 'react-native';
 import {
-  Text,
-  Surface,
-  Button,
-  Card,
   Avatar,
-  useTheme,
-  FAB,
+  IconButton,
 } from 'react-native-paper';
 import { CommonImages } from './assets/images';
-// 使用导航回调
-import { useFocusEffect } from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
 
-const mockTasks = [
+const { width: screenWidth } = Dimensions.get('window');
+
+const mockFamilies = [
   {
     id: 1,
-    title: '打扫客厅',
-    description: '扫地、拖地、擦桌子',
-    points: 50,
-    deadline: '今天 18:00',
-    assignee: {
-      name: '张三',
-      avatar: null,
-    },
+    name: '家庭1',
+    description: '身份:管理者\n',
+    quote: '一定要认真完成任务',
+    photo: CommonImages.avatars,
   },
   {
     id: 2,
-    title: '准备晚餐',
-    description: '煮饭、炒菜',
-    points: 80,
-    deadline: '今天 19:00',
-    assignee: {
-      name: '李四',
-      avatar: null,
-    },
+    name: '家庭2',
+    description: '身份:普通成员',
+    quote: '加油。',
+    photo: CommonImages.avatarss,
   },
 ];
 
-const Index = ({ navigation, route }) => {
-  const [refreshing, setRefreshing] = useState(false);
-  const [tasks, setTasks] = useState(mockTasks);
-  const theme = useTheme();
+const Index = ({ navigation }) => {
+  const [selectedFamily, setSelectedFamily] = useState(mockFamilies[0]);
 
-  // 使用焦点效果检查是否有新创建的任务
-  useFocusEffect(
-    React.useCallback(() => {
-      // 从route.params中获取新任务数据
-      if (route.params?.newTask) {
-        handleCreateTask(route.params.newTask);
-        // 重置参数，避免重复添加
-        navigation.setParams({ newTask: undefined });
-      }
-      
-      // 检查任务状态更新
-      if (route.params?.updatedTaskId && route.params?.newStatus) {
-        const { updatedTaskId, newStatus } = route.params;
-        handleTaskStatusChange(updatedTaskId, newStatus);
-        // 重置参数，避免重复更新
-        navigation.setParams({ updatedTaskId: undefined, newStatus: undefined });
-      }
-    }, [route.params])
-  );
-
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    // TODO: 实现刷新逻辑
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
-
-  const handleCreateTask = (newTask) => {
-    setTasks(prevTasks => [newTask, ...prevTasks]);
-  };
-
-  const handleTaskStatusChange = (taskId, newStatus) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId
-          ? { ...task, status: newStatus }
-          : task
-      )
-    );
-  };
-
-  const handleTaskPress = (taskId) => {
-    navigation.navigate('TaskDetail', { taskId });
+  const handleFamilySelect = (family) => {
+    setSelectedFamily(family);
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      {/* 用户信息卡片 */}
-      <Surface style={styles.userCard}>
-        <View style={styles.userInfo}>
-          <Avatar.Image
-            size={60}
-            source={CommonImages.avatar}
-            style={styles.avatar}
-          />
-          <View style={styles.userText}>
-            <Text style={styles.userName}>王小明</Text>
-            <Text style={styles.userPoints}>积分: 1280</Text>
-          </View>
-        </View>
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{tasks.filter(t => t.status === 'completed').length}</Text>
-            <Text style={styles.statLabel}>完成任务</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{tasks.filter(t => t.status === 'pending').length}</Text>
-            <Text style={styles.statLabel}>待处理</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{tasks.filter(t => t.status === 'in_progress').length}</Text>
-            <Text style={styles.statLabel}>进行中</Text>
-          </View>
-        </View>
-      </Surface>
-
-      {/* 今日任务 */}
-      <Text style={styles.sectionTitle}>今日任务</Text>
-      {tasks.map(task => (
-        <Card 
-          key={task.id} 
-          style={styles.taskCard}
-          onPress={() => handleTaskPress(task.id)}
-        >
-          <Card.Content>
-            <View style={styles.taskHeader}>
-              <Text style={styles.taskTitle}>{task.title}</Text>
-              <Text style={styles.taskPoints}>{task.points} 积分</Text>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={['#E6E6FA', '#D8BFD8']}
+        style={styles.gradientContainer}
+      >
+        {/* 顶部标题和按钮区 */}
+        <View style={styles.header}>
+          <View style={styles.rightHeader}>
+            <View style={styles.headerButton}>
+              <IconButton
+                icon="broom"
+                size={24}
+                iconColor="#333"
+                onPress={() => navigation.navigate('TaskDetail')}
+              />
+              <Text style={styles.buttonText}>任务</Text>
             </View>
-            <Text style={styles.taskDescription}>{task.description}</Text>
-            <View style={styles.taskFooter}>
-              <View style={styles.assigneeInfo}>
-                <Avatar.Image
-                  size={24}
-                  source={task.assignee.avatar || CommonImages.avatar}
+            <View style={styles.headerButton}>
+              <IconButton
+                icon="account-multiple-plus"
+                size={24}
+                iconColor="#333"
+                onPress={() => navigation.navigate('JoinFamily')}
+              />
+              <Text style={styles.buttonText}>入驻家庭</Text>
+            </View>
+            <View style={styles.headerButton}>
+              <IconButton
+                icon="home-plus"
+                size={24}
+                iconColor="#333"
+                onPress={() => navigation.navigate('CreateFamily')}
+              />
+              <Text style={styles.buttonText}>创建家庭</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* 中间标题 */}
+        <View style={styles.titleContainer}>
+          <Text style={styles.mainTitle}>✨ 选择一个家庭 ✨</Text>
+        </View>
+
+        {/* 主角色卡片 */}
+        <View style={styles.cardContainer}>
+          <TouchableOpacity 
+            style={styles.mainCard}
+            onPress={() => navigation.navigate('GroupChat')}
+          >
+            <ImageBackground
+              source={selectedFamily.photo}
+              style={styles.characterImage}
+              imageStyle={styles.characterImageStyle}
+            >
+              <TouchableOpacity 
+                style={styles.startButton}
+                onPress={() => navigation.navigate('GroupChat')}
+              >
+                <Text style={styles.startButtonText}>开启互动</Text>
+              </TouchableOpacity>
+            </ImageBackground>
+          </TouchableOpacity>
+        </View>
+
+        {/* 底部角色选择 */}
+        <View style={styles.bottomSection}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.avatarScrollContainer}
+            contentContainerStyle={styles.avatarScrollContent}
+          >
+            {mockFamilies.map((family, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleFamilySelect(family)}
+                style={styles.avatarContainer}
+              >
+                <Image
+                  source={family.photo}
+                  style={[
+                    styles.avatar,
+                    selectedFamily?.id === family.id && styles.selectedAvatar
+                  ]}
                 />
-                <Text style={styles.assigneeName}>{task.assignee.name}</Text>
-              </View>
-              <Text style={styles.deadline}>{task.deadline}</Text>
-            </View>
-          </Card.Content>
-        </Card>
-      ))}
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
 
-      {/* 快速操作按钮 */}
-      <FAB
-        icon="plus"
-        style={styles.fab}
-        onPress={() => navigation.navigate('CreateTask')}
-      />
-    </ScrollView>
+          {selectedFamily && (
+            <View style={styles.familyInfoContainer}>
+              <Text style={styles.familyName}>
+                家庭{selectedFamily.id} Lv{selectedFamily.level}
+              </Text>
+              <Text style={styles.familyRole}>
+                
+              </Text>
+              <Text style={styles.familyDescription}>
+                {selectedFamily.description}
+              </Text>
+              <Text style={styles.familyQuote}>
+                {selectedFamily.quote}
+              </Text>
+            </View>
+          )}
+        </View>
+      </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
-  userCard: {
-    margin: 16,
-    padding: 16,
-    borderRadius: 10,
-    elevation: 4,
-  },
-  userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  avatar: {
-    marginRight: 16,
-  },
-  userText: {
+  gradientContainer: {
     flex: 1,
   },
-  userName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  userPoints: {
-    fontSize: 16,
-    color: '#666',
-  },
-  statsContainer: {
+  header: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    marginBottom: 10,
   },
-  statItem: {
+  rightHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  headerButton: {
+    alignItems: 'center',
+    marginLeft: 16,
   },
-  statLabel: {
-    fontSize: 14,
-    color: '#666',
+  buttonText: {
+    fontSize: 12,
+    color: '#333',
+    marginTop: -8,
   },
-  sectionTitle: {
+  titleContainer: {
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  mainTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    margin: 16,
-    marginTop: 0,
+    color: '#333',
+    textAlign: 'center',
   },
-  taskCard: {
-    margin: 16,
-    marginTop: 0,
-  },
-  taskHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  cardContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    marginBottom: 8,
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
-  taskTitle: {
+  mainCard: {
+    width: screenWidth - 40,
+    height: screenWidth - 40,
+    borderRadius: 30,
+    overflow: 'hidden',
+    backgroundColor: 'white',
+    elevation: 4,
+  },
+  characterImage: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end',
+    padding: 20,
+  },
+  characterImageStyle: {
+    borderRadius: 30,
+  },
+  startButton: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  startButtonText: {
+    color: '#6200ee',
     fontSize: 16,
     fontWeight: 'bold',
   },
-  taskPoints: {
-    color: '#6200ee',
-    fontWeight: 'bold',
+  bottomSection: {
+    marginTop: 'auto',
+    paddingBottom: 40,
+    alignItems: 'center',
   },
-  taskDescription: {
+  avatarScrollContainer: {
+    marginBottom: 16,
+    width: '100%',
+  },
+  avatarScrollContent: {
+    justifyContent: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+  },
+  avatarContainer: {
+    marginHorizontal: 8,
+    height: 50,
+    justifyContent: 'center',
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  selectedAvatar: {
+    borderColor: '#8A2BE2',
+  },
+  familyInfoContainer: {
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  familyName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  familyRole: {
+    fontSize: 16,
     color: '#666',
     marginBottom: 8,
   },
-  taskFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  assigneeInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  assigneeName: {
-    marginLeft: 8,
-  },
-  deadline: {
+  familyDescription: {
+    fontSize: 14,
     color: '#666',
+    textAlign: 'center',
+    marginBottom: 4,
   },
-  fab: {
-    position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 0,
+  familyQuote: {
+    fontSize: 14,
+    color: '#999',
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 8,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  navItem: {
+    alignItems: 'center',
+  },
+  navItemActive: {
+    transform: [{scale: 1.1}],
+  },
+  navText: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: -8,
+  },
+  navTextActive: {
+    color: '#6200ee',
+    fontWeight: 'bold',
   },
 });
 
 export default Index;
-

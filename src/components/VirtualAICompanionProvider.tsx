@@ -12,7 +12,7 @@ interface VirtualAICompanionContextType {
 }
 
 const defaultContextValue: VirtualAICompanionContextType = {
-  isVisible: true,
+  isVisible: false,
   showCompanion: () => {},
   hideCompanion: () => {},
   toggleCompanion: () => {},
@@ -30,12 +30,12 @@ interface VirtualAICompanionProviderProps {
 }
 
 // 需要排除的屏幕（不显示AI助手的屏幕）
-const EXCLUDED_SCREENS = ['LogIn', 'AbilityChoice', 'PrivateInformation'];
+const EXCLUDED_SCREENS = ['LogIn', 'Register', 'AbilityChoice', 'PrivateInformation'];
 
 // 虚拟AI伙伴提供者组件
 const VirtualAICompanionProvider: React.FC<VirtualAICompanionProviderProps> = ({
   children,
-  initialVisible = true,
+  initialVisible = false,
 }) => {
   const [isVisible, setIsVisible] = useState(initialVisible);
   const [currentScreen, setCurrentScreen] = useState<string>('');
