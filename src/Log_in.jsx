@@ -171,6 +171,7 @@ const LogIn = ({ navigation }) => {
               mode="outlined"
               style={styles.input}
               keyboardType="email-address"
+              
               autoCapitalize="none"
               error={emailTouched && !!emailError}
             />
