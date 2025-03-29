@@ -227,7 +227,10 @@ const AppNavigator = () => {
         <Stack.Screen 
           name="TaskDetail" 
           component={TaskDetail}
-          options={{ title: '任务详情' }}
+          options={{ title: '任务详情' ,
+            headerShown: false, 
+          }}
+          
         />
         <Stack.Screen 
           name="CreateTask" 

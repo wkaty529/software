@@ -133,6 +133,7 @@ const TaskDetail = ({ route, navigation }) => {
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>任务详情</Text>
+        <View style={styles.backButtonContainer} />
       </View>
       
       <ScrollView>
@@ -245,8 +246,9 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    height: 56,
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 12,
   },
   title: {
@@ -343,15 +345,18 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-  },
-  backButtonContainer: {
-    padding: 8,
+    flex: 1,
+    textAlign: 'center',
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
+  },
+  backButtonContainer: {
+    width: 40,  // 给一个固定宽度
+    alignItems: 'center',
   },
 });
 

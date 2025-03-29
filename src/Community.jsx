@@ -39,6 +39,7 @@ const Community = ({ navigation }) => {
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [newComment, setNewComment] = useState('');
+  const [selectedTasks, setSelectedTasks] = useState([]);
 
   useEffect(() => {
     if (status === 'idle') {
