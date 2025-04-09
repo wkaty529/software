@@ -1,8 +1,10 @@
-/**
- * @format
- */
+import { configureStore } from '@reduxjs/toolkit';
+import postsReducer from './slices/postsSlice';
+import userReducer from './slices/userSlice';
 
-import {AppRegistry} from 'react-native';
-import App from './src/App';
-import {name as appName} from './app.json';
-AppRegistry.registerComponent(appName, () => App);
+export const store = configureStore({
+  reducer: {
+    posts: postsReducer,
+    user: userReducer,
+  },
+}); 
